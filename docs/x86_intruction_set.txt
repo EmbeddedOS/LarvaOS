@@ -1,55 +1,130 @@
-- 8086 Registers:
-	- General-purpose registers are used to store temporary data within the microprocessor. There are 8 general-purpose registers in the 8086 microprocessor.
+1. 8086 Registers:
+	+ General-purpose registers are used to store temporary data within the microprocessor. \
+		 There are 8 general-purpose registers in the 8086 microprocessor.
 
-	1. AX: This is the accumulator. It is of 16 bits and is divided into two 8-bit registers AH and AL to also perform 8-bit instructions. It is generally used for arithmetical and logical instructions but in 8086 microprocessor it is not mandatory to have an accumulator as the destination operand. Example:
+		+ AX: This is the accumulator. \
+			It is of 16 bits and is divided into two 8-bit registers AH and AL to also perform 8-bit instructions. \
+			It is generally used for arithmetical and logical instructions but in 8086 microprocessor it is not mandatory to have an accumulator as the destination operand. \
+			Example:
+				ADD AX, AX (AX = AX + AX)
 
-	ADD AX, AX (AX = AX + AX)
-	2. BX: This is the base register. It is of 16 bits and is divided into two 8-bit registers BH and BL to also perform 8-bit instructions. It is used to store the value of the offset. Example:
+		+ BX: This is the base register. \
+			It is of 16 bits and is divided into two 8-bit registers BH and BL to also perform 8-bit instructions. \
+			It is used to store the value of the offset. \
+			Example:
+				MOV BL, [500] (BL = 500H)
 
-	MOV BL, [500] (BL = 500H)
-	3. CX: This is the counter register. It is of 16 bits and is divided into two 8-bit registers CH and CL to also perform 8-bit instructions. It is used in looping and rotation. Example:
+		+ CX: This is the counter register. \
+			It is of 16 bits and is divided into two 8-bit registers CH and CL to also perform 8-bit instructions. \
+			It is used in looping and rotation. \
+			Example:
+				MOV CX, 0005
+				LOOP
 
-	MOV CX, 0005
-	LOOP
-	4. DX: This is the data register. It is of 16 bits and is divided into two 8-bit registers DH and DL to also perform 8-bit instructions. It is used in the multiplication and input/output port addressing. Example:
+		+ DX: This is the data register. \
+			It is of 16 bits and is divided into two 8-bit registers DH and DL to also perform 8-bit instructions. \
+			It is used in the multiplication and input/output port addressing. \
+			Example:
+				MUL BX (DX, AX = AX * BX)
 
-	MUL BX (DX, AX = AX * BX)
-	5. SP: This is the stack pointer. It is of 16 bits. It points to the topmost item of the stack. If the stack is empty the stack pointer will be (FFFE)H. Its offset address is relative to the stack segment.
+		+ SP: This is the stack pointer. \
+			It is of 16 bits. \
+			It points to the topmost item of the stack. \
+			If the stack is empty the stack pointer will be (FFFE)H. \
+			Its offset address is relative to the stack segment.
 
-	6. BP – This is the base pointer. It is of 16 bits. It is primarily used in accessing parameters passed by the stack. Its offset address is relative to the stack segment.
+		+ BP – This is the base pointer. \
+			It is of 16 bits. \
+			It is primarily used in accessing parameters passed by the stack. \
+			Its offset address is relative to the stack segment.
 
-	7. SI – This is the source index register. It is of 16 bits. It is used in the pointer addressing of data and as a source in some string-related operations. Its offset is relative to the data segment.
+		+ SI – This is the source index register. \
+			It is of 16 bits. \
+			It is used in the pointer addressing of data and as a source in some string-related operations. \
+			Its offset is relative to the data segment.
 
-	8. DI – This is the destination index register. It is of 16 bits. It is used in the pointer addressing of data and as a destination in some string-related operations. Its offset is relative to the extra segment.
+		+ DI – This is the destination index register. \
+			It is of 16 bits. \
+			It is used in the pointer addressing of data and as a destination in some string-related operations. \
+			Its offset is relative to the extra segment.
 
+		+ IP - Instruction pointer, \
+			contains the value of the current address you are executing a memory, \
+			so the process uses the IP register to know which instruction to load from RAM.
 
+	+ Need for segmentation:
 
-- Instructions
-	Instruction 	Operands 		Description 
-	INT		immediate byte		Interrupt numbered by immediate byte (0..255). 
-						Example:
-							MOV AH, 0Eh ; teletype.
-							MOV AL, 'A'
-							INT 10h ; BIOS interrupt (in the bios's kernel, interrupt 10h, which is responsible for ouputing to the screen.)
-							RET 
+		+ CS - Code segment register. \
+			Is used for addressing memory location in the code segment of the memory, where the executable program is stored.
 
+		+ DS - Data segment register. \
+			Points to the data segment of the memory where the data is stored.
 
-	jmp 		label 4-byte address 	Unconditional Jump. Transfers control to another part of the program. 4-byte address may be entered in this form: 1234h:5678h, first value is a segment second value is an offset. 
+		+ ES - Extra Segment register. \
+			Also refers to a segment in the memory which is another data segment in the memory.
 
+		+ SS - Stack segment register. \
+			Is used for addressing stack segment of the memory. \
+			The stack segment is that segment of memory which is used to store stack data.
 
-
-
-- Syntax for a variable declaration:
-	- Our compiler supports two types of variables: BYTE and WORD.
-	- syntaxs:
+2. Syntax for a variable declaration:
+	+ Our compiler supports two types of variables: BYTE and WORD.
+	+ syntaxs:
 		name DB value
 		name DW value
-	- name - can be any letter or digit combination, though it should start with a letter. It's possible to declare unnamed variables by not specifying the name (this variable will have an address but no name).
+	+ name - can be any letter or digit combination, \
+		though it should start with a letter. \
+		It's possible to declare unnamed variables by not specifying the name (this variable will have an address but no name).
 
-	- value - can be any numeric value in any supported numbering system (hexadecimal, binary, or decimal), or "?" symbol for variables that are not initialized.
+	+ value - can be any numeric value in any supported numbering system (hexadecimal, binary, or decimal), or "?" symbol for variables that are not initialized.
 
-	DB - stays for Define Byte.
-	DW - stays for Define Word.
+	+ DB - stays for Define Byte.
+	+ DW - stays for Define Word.
+
+3. Directives:
+	+ TIMES - times directive allows multiple initializations to the same value. For example, an array named marks of size 9 can be defined and initialized to zero using the following statement:
+		marks  TIMES  9  DW  0
+
+4. symbols:
+	+ $ - denotes the current address of the statement.
+	+ $$ - denotes the address of the beginning of the current section. 
+
+
+5. Instructions:
+	Instruction 	Operands 				Description 
+	
+	INT				immediate byte			Interrupt numbered by immediate byte (0..255). 
+											Example:
+												MOV AH, 0Eh ; teletype.
+												MOV AL, 'A'
+												INT 10h ; BIOS interrupt (in the bios's kernel, interrupt 10h, which is responsible for ouputing to the screen.)
+												RET 
+
+	jmp 			label, 					Unconditional Jump. Transfers control to another part of the program. 4-byte address may be entered in this form: 1234h:5678h, first value is a segment second value is an offset. 
+					4-byte address
+	
+	lodsb			No operands				Load byte at DS:[SI] into AL. Update SI. 
+
+	cmp				REG, memory				Compare.
+					memory, REG
+					REG, REG
+					memory, immediate
+					REG, immediate 
+
+	je				label					Short Jump if first operand is Equal to second operand (as set by CMP instruction). 
+											Example:
+												CMP AL, 5
+												JE label1
+												PRINT 'AL is not equal to 5.'
+												JMP exit
+
+	call 			procedure name			Transfers control to procedure, return address is (IP) is pushed to stack.
+					abel
+					4-byte address 
+
+
+
+
 
 
 
