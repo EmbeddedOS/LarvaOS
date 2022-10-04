@@ -52,7 +52,7 @@
 			contains the value of the current address you are executing a memory, \
 			so the process uses the IP register to know which instruction to load from RAM.
 
-	+ Need for segmentation:
+	+ 8086 Segment Registers:
 
 		+ CS - Code segment register. \
 			Is used for addressing memory location in the code segment of the memory, where the executable program is stored.
@@ -69,7 +69,7 @@
 
 2. Syntax for a variable declaration:
 	+ Our compiler supports two types of variables: BYTE and WORD.
-	+ syntaxs:
+	+ syntaxes:
 		name DB value
 		name DW value
 	+ name - can be any letter or digit combination, \
@@ -103,7 +103,7 @@
 	jmp 			label, 					Unconditional Jump. Transfers control to another part of the program. 4-byte address may be entered in this form: 1234h:5678h, first value is a segment second value is an offset. 
 					4-byte address
 	
-	lodsb			No operands				Load byte at DS:[SI] into AL. Update SI. 
+	lodsb			No operands				Load byte at DS:[SI] into AL. lodsb uses the DS:SI register combination. Update SI. 
 
 	cmp				REG, memory				Compare.
 					memory, REG
@@ -119,14 +119,21 @@
 												JMP exit
 
 	call 			procedure name			Transfers control to procedure, return address is (IP) is pushed to stack.
-					abel
+					label
 					4-byte address 
 
 
+	cli 			No operands				Clear Interrupt enable flag. This disables hardware interrupts.
 
+	sti				No operands 			Set Interrupt enable flag. This enables hardware interrupts.
 
+	nop 			No operands				No operands. Do not thing.
 
+	ret 			No operands 			Return from near procedure.
+					or even immediate
 
-
+	iret 			No operands				Interrupt Return.
+	
+	lgdt									load GDT register with start address of Global Descriptor Table
 
 
