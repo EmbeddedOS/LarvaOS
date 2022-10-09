@@ -107,7 +107,46 @@ Wiki: http://www.osdev.org/
                 + The Platform: You should have studied the manuals for the processor you will be programming for. \
                     They contain the information you need to design your kernel in the first place.
                 + The Concept: You should have an understanding of how existent operating systems function at the technical level (e.g. by having read some Books).
-                
+
+        1.1.7. beginner Mistakes:
+            + The idea to " write your own OS" brought you here. \
+                This wiki is about giving you help, pointers, and references in your undertaking.
+
+            + However, it is quite common that newcomers make certain mistakes \
+                or have common misconceptions about what is involved in the topic. 
+
+            1.1.7.1. what this is NOT:
+                + This may look like a set of tutorials to copy & paste, \
+                    plus a forum to ask your questions whenever you get stuck. THIS IS NOT SO.
+
+            1.1.7.2. A hard Truth:
+                + No one who isn't already a seasoned developer with years of experience in several languages \
+                    and environments should even be considering OS Dev yet. \
+                    A decade of programming, including a few years of low-level coding in assembly Language and/or \
+                    a systems language such as C, is pretty much the minimum necessary to even understand the topic well enough to work in it.
+
+            1.1.7.3. Popularity: My OS will be more popular than Windows, Mac OS, and Linux!
+                + This is extremely unlikely. \
+                    To achieve this requires quite a lot of time, money, and knowledge. \
+                    Not everyone will download your operating system because:
+                    + They may not know what an OS is how to install one.
+                    + Your OS has security risks.
+                    + Your OS supports fewer application.
+                    + Your OS is not fully functional.
+
+            1.1.7.4. Memory usage: I want to use less than a couple of kilobytes for my OS!
+                + Sorry, that's probably impossible. \
+                    An OS using such little memory will be almost unusable. \
+                    Forget about filesystem drivers, disk drivers, usb drivers, etc. \
+                    If you want to develop something small, just make a simple bootloader, not an OS.
+
+
+
+
+
+
+
+
     1.2. Environment:
         1.2.1. Kernel:
             + The kernel is the core of an operating system. \
@@ -131,7 +170,44 @@ Wiki: http://www.osdev.org/
                 a C library might (and usually does) implement further functionality, \
                 which might or might not be defined by some standard. 
 
+        1.2.3. UEFI:
+            + (U)EFI or (Unified) Extensible Firmware Interface is a specification for x86, x86-64, ARM and Itanium platforms \
+                that defines a software interface between the operating system the platform firmware/BIOS.
+
+        1.2.4. BIOS:
+            + BIOS (BasicINput/Output System) was created to offer generalized low level services to early PC system programmers. \
+                The basic aims were: to HIDE (as much as possible) variations in PC models and hardware from the OS and applications, \
+                And to MAKE OS and application development easier. \
+                (because the BIOS services handled most of the hardware level interface.)
+
+            + These BIOS services are still used (especially during boot up), \
+                and are often named "BIOS functions". \
+                In Real mode, they can be easily accessed though software interrupts, using Assembly language.
+
+            1.2.4.1. BIOS functions:
+                + To access a BIOS function, you generally set the AH register (or AX or EAX) to a particular value, \
+                    and then do an INT opcode. \
+                    The value in AH register (or AX or EAX), combined with the particular number selected requests a specific BIOS function. \
+                    (Other CPU registers hold any "arguments" to the function, and often the return values from function, also.)
+
+                + For example, INT 0x13, AH=0 is a BIOS function that resets hard disks or floppy disks.
+
+            1.2.4.2. Common functions:
+                INT 0x10, AH = 1 -- set up the cursor
+                INT 0x10, AH = 3 -- cursor position
+                INT 0x10, AH = 0xE -- display char
+                INT 0x10, AH = 0xF -- get video page and mode
+                ...
+            1.2.4.3. BIOS in Protected Mode:
+                + Unfortunately, in Protected mode, \
+                    almost all BIOS functions become unavailable, and trying to call them nonetheless will result in exceptions \
+                    or unreliable responses.
+
+
+
     1.3. Bare Bones, Baby Steps:
+        1.3.1. Bare Bones (C and C++):
+            + 
     1.3. Example OS organization:
     1.4. Booting and Setup:
         1.4.1. Boot Sequence:
@@ -190,6 +266,11 @@ Wiki: http://www.osdev.org/
                             ; to load CS with proper PM32 descriptor)
                             jmp 08h:PModeMain
  
+    5.2. Memory:
+        5.2.1. Detecting Memory (x86)
+        5.2.2. A20 Line or "Why can't I access all my memory?"
+            + The A20 Address Line is the physical representation of the 21st bit (number 20, counting from 0) of any memory access. \
+
 PModeMain:
 ; load DS, ES, FS, GS, SS, ESP
 

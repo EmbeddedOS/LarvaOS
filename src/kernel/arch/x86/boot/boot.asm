@@ -4,9 +4,9 @@ BITS 16     ; 16 bit instruction.
 CODE_SEG equ gdt_code - gdt_start
 DATA_SEG equ gdt_data - gdt_start
 
-setup_BPB:
-    jmp short _start 
-    nop
+
+jmp short _start 
+nop
 
 times 33 db 0   ; Set up BIOS parameter block to avoid corrupt data. 
 
@@ -31,7 +31,6 @@ start:
     mov sp, 0x7c00
     sti                         ; Enable Interrupts.
     ; Set up memory end.
-    
 
 
 .load_protected:
