@@ -1,45 +1,43 @@
-ORG 0x7c00  ; Assembly origin. 
+ORG 0x7C00  ; Assembly origin. 
 BITS 16     ; 16 bit instruction.         
 
 CODE_SEG equ gdt_code - gdt_start
 DATA_SEG equ gdt_data - gdt_start
 
-
+; -- Entry point.
 jmp short _start 
 nop
 
-times 33 db 0   ; Set up BIOS parameter block to avoid corrupt data. 
 
+times 33 db 0   ; Set up BIOS parameter block, this is necessary to avoid corrupt data. 
 
 _start:
     jmp 0:start
 
-
-
 start:
-    ; Set up memory start.
-    cli                         ; Clear Interrupts.
-    ; Set data segment, extra segment to 0x00.
+    ; -- Set up memory:
+    ; data segment, extra segment, stack segment to 0x00.
+    ; stack pointer points to 0x7C00.
+    cli                         
     mov ax, 0x00
     mov ds, ax
     mov es, ax 
-    
-    ; Set stack segment to 0x00.
     mov ss, ax 
+    mov sp, 0x7C00
+    sti                         
 
-    ; Setting stack pointer points to 0x7c00 address.
-    mov sp, 0x7c00
-    sti                         ; Enable Interrupts.
-    ; Set up memory end.
-
-
-.load_protected:
-    cli         ; Clear Interrupts.
-    lgdt[gdt_descriptor]
+    ; -- Entering Protected mode: https://wiki.osdev.org/Protected_Mode
+    ; 1. Disable interrupts.
+    ; 2. Enable A20 Line.
+    ; 3. Load the Global Descriptor Table with segment descriptors suitable for code, data and stack.
+    cli                     ; Disable interrupts.
+    lgdt[gdt_descriptor]    ; Load Global Descriptor Table register with start address of GDT.
+    
     mov eax, cr0
-    or eax, 0x1
+    or al, 0x1              ; Set Protection Enable - PE bit in CR0 (Control register 0).
     mov cr0, eax 
-    jmp CODE_SEG:load32
+    jmp CODE_SEG:protect_mode_main  ; Perform far jump to selector CODE_SEG (offset into GDT, pointing at a 32 bit PM code segment descriptor)
+                                    ; to load CS with proper PM32.
 
 
 
@@ -74,7 +72,9 @@ gdt_descriptor:
     dd gdt_start
 
 [BITS 32]
-load32:
+protect_mode_main:
+    ; -- Entered Protected Mode.
+    ; load DS, ES, FS, GS, SS, ESP
     mov ax, DATA_SEG
     mov ds, ax 
     mov es, ax
