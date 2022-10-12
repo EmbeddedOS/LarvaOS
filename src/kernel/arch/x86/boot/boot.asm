@@ -30,9 +30,6 @@ BITS 16     ; 16 bit instruction.
             ; Since all intel based start up with 16-bit instructions,
             ; we have to start with 16-bit instructions before switch to protected mode to use 32-bit instructions.
 
-CODE_SEG equ gdt_code - gdt_start
-DATA_SEG equ gdt_data - gdt_start
-
 ; -- Entry point.
 jmp short _start
 nop
@@ -74,39 +71,12 @@ start:
                                         ; real-mode decoded instructions, which can cause problems.
 
 
+; This will simply get replaced bythe contents of the file.
+%include "src/kernel/arch/x86/boot/gdt.asm" 
 
-; Global Descriptor Table memory layout.
-; Global descriptor table setup.
-gdt_start:
-gdt_null:
-    dd 0x0
-    dd 0x0
 
-; offset 0x8
-gdt_code:           ; CS SHOULD POINT TO THIS.
-    dw 0xffff       ; Segment limit 0-15 bits.
-    dw 0            ; Base first 0-15 bits.
-    db 0            ; Base 16-23 bits.
-    db 0x9a         ; Access byte.
-    db 11001111b    ; High 4 bit flags and the low 4 bit flags.
-    db 0            ; Base 24-31 bits.
-
-; offset 0x10
-gdt_data:           ; DS, SS, ES, FS, GS.
-    dw 0xffff       ; Segment limit first 0-15 bits.
-    dw 0            ; Base first 0-15 bits.
-    db 0            ; Base 16-23 bits.
-    db 0x92         ; Access byte.
-    db 11001111b    ; High 4 bit flags and the low 4 bit flags.
-    db 0            ; Base 24-31 bits.
-
-gdt_end:
-
-gdt_descriptor:
-    dw gdt_end - gdt_start - 1
-    dd gdt_start
-
-[BITS 32]
+[BITS 32]           ; We need to use the [bits 32] directive to tell our the assembler that,
+                    ; from that point onwards, it should encode in 32-bit mode instructions.
 start_protected_mode:
     ; By now we are assuredly in 32 - bit protected mode.
     ; load DS, ES, FS, GS, SS, ESP
