@@ -1,0 +1,3 @@
+GCC Cross-Compiler
+
+This tutorial focuses on creating a GCC cross compiler for your own OS.

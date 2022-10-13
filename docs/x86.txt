@@ -1,9 +1,0 @@
-+ x86 (also known as 80x86 or 8086 family) is \
-    a family of complex instruction set computer (CISC) instruction set architectures  \
-    initially developed by Intel based on the Intel 8086 microprocessor and its 8088 variant.
-
-+ The 8086 was introduced in 1978 as a fully 16-bit extension of Intel's 8-bit 8080 microprocessor, \
-    with memory segmentation as a solution for addressing more memory than can be covered by a plain 16-bit address.
-
-1. Overview:
-    
