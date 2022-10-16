@@ -28,7 +28,7 @@ which -- $TARGET-as || echo $TARGET-as is not in the PATH
 cd build
 mkdir build-gcc
 cd build-gcc
-../../cross_compiler/binutils/configure --target=$TARGET --prefix="$PREFIX" --disable-nls --enable-languages=c,c++ --without-headers
+../../cross_compiler/gcc/configure --target=$TARGET --prefix="$PREFIX" --disable-nls --enable-languages=c,c++ --without-headers
 make all-gcc
 make all-target-libgcc
 make install-gcc
