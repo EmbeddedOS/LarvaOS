@@ -21,3 +21,5 @@ prints out registers in both raw format (hex) and natural format in gdb:
     info registers
 
 
+run cross compiler:
+    /bin/cross/bin/$TARGET-gcc --version
