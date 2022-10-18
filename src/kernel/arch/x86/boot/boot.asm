@@ -73,7 +73,8 @@ start:
 
 ; This will simply get replaced bythe contents of the file.
 %include "src/kernel/arch/x86/boot/gdt.asm" 
-
+%include "src/kernel/arch/x86/utils/print_string_pm.asm"
+%include "src/kernel/arch/x86/boot/enable_A20_line.asm"
 
 [BITS 32]           ; We need to use the [bits 32] directive to tell our the assembler that,
                     ; from that point onwards, it should encode in 32-bit mode instructions.
@@ -86,29 +87,19 @@ start_protected_mode:
     mov fs, ax
     mov gs, ax 
     mov ss, ax
-
-
     mov ebp, 0x00200000             ; Update our stack position so it is right 
     mov esp, ebp                    ; at the top of the free space.
 
-    ; Enable A20 line by using Fast A20 Gate.
-    ; Why do we need enable A20 line? - https://en.wikipedia.org/wiki/A20_line
-    ; How to enable it and how many ways to do that? - https://wiki.osdev.org/A20_Line#Enabling
-    ; Enabling the Gate-A20 line is one of the first steps that a protected mode x86 OS does in the bootup process,
-	; often before control has been passed to the kernel from bootstrap.
-    ;
-    ; On most newer computers starting with the IBM PS/2, 
-    ; the chipset has a FAST A20 option that can quickly enable the A20 line. To enable A20 this way, 
-    ; there is no need for delay loops or polling, just 3 simple instructions.
-    in al, 0x92
-    or al, 2
-    out 0x92, al
+    call enable_A20_line            ; Enable A20 line.
 
-
+    mov ebx , MSG_PROT_MODE
+    call print_string_pm            ; Use our 32 - bit print routine.
 
     jmp $
 
 
+
+MSG_PROT_MODE db "Successfully landed in 32 - bit Protected Mode.", 0
 
 times 510-($ - $$) db 0             ; When compiled, our program must fit into 512 bytes,
                                     ; with the last two bytes being the magic number,
