@@ -88,7 +88,7 @@ jmp 8:10000h
 
 Notes:
 
-* that in this case, the **GDT** will be temporary. Indeed, the loader has no idea of what the kernel wants to do with the **GDT**, so all it can do is providing a minimal and let the kernel reload **GDTR** with an appropriate GDT later.
+* that in this case, the **GDT** will be temporary. Indeed, the loader has no idea of what the kernel wants to do with the **GDT**, so all it can do is providing a minimal and let the kernel reload **GDTR** with an appropriate **GDT** later.
 * It's common for the loader to keep interrupts disabled (the kernel will enable them later when an IDT is properly set up).
 * Give yourself the time about thinking whether you'll enable paging now or not. **Keep in mind** that debugging paging initialization code without the help of exception handlers may quickly become a nightmare!
 * It is possible to perform more initialization once protected mode is enabled and before kernel is loaded. This will, however, require that you mix `16bits` and `32bits` code in a single object file, which can quickly become a nightmare too...
