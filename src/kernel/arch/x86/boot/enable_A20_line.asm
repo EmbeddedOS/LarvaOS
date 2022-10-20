@@ -7,7 +7,7 @@
 ; On most newer computers starting with the IBM PS/2, 
 ; the chipset has a FAST A20 option that can quickly enable the A20 line. To enable A20 this way, 
 ; there is no need for delay loops or polling, just 3 simple instructions.
-[bits 32]
+[BITS 32]
 enable_A20_line:
     in al, 0x92
     or al, 2

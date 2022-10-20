@@ -59,6 +59,10 @@ start:
     ; 2. Enable A20 Line.
     ; 3. Load the Global Descriptor Table with segment descriptors suitable for code, data and stack.
     cli                     ; Disable interrupts.
+
+    mov si, MSG_REAL_MODE	
+    call print_string_rm
+
     lgdt[gdt_descriptor]    ; Load Global Descriptor Table register with start address of GDT,
                             ; which defines the protected mode segments (e.g for code and data).
     
@@ -72,34 +76,83 @@ start:
 
 
 ; This will simply get replaced bythe contents of the file.
-%include "src/kernel/arch/x86/boot/gdt.asm" 
-%include "src/kernel/arch/x86/utils/print_string_pm.asm"
-%include "src/kernel/arch/x86/boot/enable_A20_line.asm"
+%include "./gdt.asm" 
+%include "./print_string_pm.asm"
+%include "./print_string_rm.asm"
+%include "./enable_A20_line.asm"
 
 [BITS 32]           ; We need to use the [bits 32] directive to tell our the assembler that,
                     ; from that point onwards, it should encode in 32-bit mode instructions.
 start_protected_mode:
-    ; By now we are assuredly in 32 - bit protected mode.
-    ; Initialize registers and the stack once in Protected Mode.
-    mov ax, DATA_SEG                ; Now in PM, our old segments are meaningless,
-    mov ds, ax                      ; so we point our segment registers to the 
-    mov es, ax                      ; data selector we defined in our GDT.
-    mov fs, ax
-    mov gs, ax 
-    mov ss, ax
-    mov ebp, 0x00200000             ; Update our stack position so it is right 
-    mov esp, ebp                    ; at the top of the free space.
+; Do some thing.
+    mov eax, 1
+    mov ecx, 100
+    mov edi, 0x0100000
+    call ata_lba_read
+    jmp CODE_SEG:0x0100000
 
-    call enable_A20_line            ; Enable A20 line.
+ata_lba_read:
+    mov ebx, eax, ; Backup the LBA
+    ; Send the highest 8 bits of the lba to hard disk controller
+    shr eax, 24
+    or eax, 0xE0 ; Select the  master drive
+    mov dx, 0x1F6
+    out dx, al
+    ; Finished sending the highest 8 bits of the lba
 
-    mov ebx , MSG_PROT_MODE
-    call print_string_pm            ; Use our 32 - bit print routine.
+    ; Send the total sectors to read
+    mov eax, ecx
+    mov dx, 0x1F2
+    out dx, al
+    ; Finished sending the total sectors to read
 
-    jmp $
+    ; Send more bits of the LBA
+    mov eax, ebx ; Restore the backup LBA
+    mov dx, 0x1F3
+    out dx, al
+    ; Finished sending more bits of the LBA
+
+    ; Send more bits of the LBA
+    mov dx, 0x1F4
+    mov eax, ebx ; Restore the backup LBA
+    shr eax, 8
+    out dx, al
+    ; Finished sending more bits of the LBA
+
+    ; Send upper 16 bits of the LBA
+    mov dx, 0x1F5
+    mov eax, ebx ; Restore the backup LBA
+    shr eax, 16
+    out dx, al
+    ; Finished sending upper 16 bits of the LBA
+
+    mov dx, 0x1f7
+    mov al, 0x20
+    out dx, al
+
+    ; Read all sectors into memory
+.next_sector:
+    push ecx
+
+; Checking if we need to read
+.try_again:
+    mov dx, 0x1f7
+    in al, dx
+    test al, 8
+    jz .try_again
+
+; We need to read 256 words at a time
+    mov ecx, 256
+    mov dx, 0x1F0
+    rep insw
+    pop ecx
+    loop .next_sector
+    ; End of reading sectors into memory
+    ret
 
 
 
-MSG_PROT_MODE db "Successfully landed in 32 - bit Protected Mode.", 0
+MSG_REAL_MODE db "Successfully landed in 16 - bit Protected Mode.", 0
 
 times 510-($ - $$) db 0             ; When compiled, our program must fit into 512 bytes,
                                     ; with the last two bytes being the magic number,

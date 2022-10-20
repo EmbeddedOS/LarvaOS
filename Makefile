@@ -1,5 +1,18 @@
+OS_DIR=$(shell cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+BUILD_DIR=$(OS_DIR)/build
+
+export OS_DIR
+export BUILD_DIR
+
+
+help:
+	@echo "Makefile for Building Larva Operating System."
+	@echo "Usage: make [ all | clean | help | build | run] " 
+	@echo ""
+
 all:
-	nasm -f bin src/kernel/arch/x86/boot/boot.asm -o bin/boot.bin
+# Build the kernel first.
+	make -C ./src/kernel all
 
 clean:
-	rm -rf bin/*.bin
+	make -C ./src/kernel clean

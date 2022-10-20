@@ -1,4 +1,4 @@
-[bits 32]
+[BITS 32]
 ; Define some constants
 VIDEO_MEMORY equ 0xb8000
 WHITE_ON_BLACK equ 0x0f
