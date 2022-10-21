@@ -1,12 +1,16 @@
 ARCH=x86
-KERNEL=kernel.elf
+KERNEL=kernel.o
 IMAGE=../../bin/LavaOS.img
-
+KERNEL_LIB_DIR=../../bin/kernel_lib/
+TMP_OBJ_FILE=tmp.o
 include arch/$(ARCH)/config.make
 include arch/$(ARCH)/Makefile
 
 # Adding architecture-independent code.
 OBJS+= ./core/kernel.o
+INCLUDES+= -I./ -I./core/ -I./runtime
+LIBC:=$(wildcard $(KERNEL_LIB_DIR)*.a)
+
 
 all: $(FIRST_SECTOR) $(KERNEL)
 	rm -rf $(IMAGE)
@@ -25,9 +29,8 @@ all: $(FIRST_SECTOR) $(KERNEL)
 	make clean
 
 $(KERNEL): $(OBJS)
-	$(LD) $(LD_FLAG) -o link.o $^
-	$(SCC) link.o $(FLAGS) -T $(LINKER_SCRIPT) -o $@
-	rm link.o
+	$(LD) $(LD_FLAG) -o $(TMP_OBJ_FILE) $^
+	$(SCC) $(TMP_OBJ_FILE) $(LIBC) $(FLAGS) -T $(LINKER_SCRIPT) -o $@
 
 # Build the first sector in binary format.
 # A Binary file is a pure binary file with no memory fix-ups or relocations,
@@ -48,4 +51,5 @@ $(KERNEL): $(OBJS)
 	$(SCC) $(FLAGS) $(INCLUDES) -c $< -o  $@
 
 clean:
-	rm -f $(FIRST_SECTOR) $(OBJS) $(KERNEL)
+	rm -f $(FIRST_SECTOR) $(OBJS) $(KERNEL) $(TMP_OBJ_FILE)
+

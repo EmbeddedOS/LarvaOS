@@ -80,7 +80,7 @@ start:
 %include "./utils/print_string_pm.asm"
 %include "./utils/print_string_rm.asm"
 %include "./enable_A20_line.asm"
-%include "./drivers/ATA_read_sector.asm"
+%include "./ATA_read_sector.asm"
 
 [BITS 32]           ; We need to use the [bits 32] directive to tell our the assembler that,
                     ; from that point onwards, it should encode in 32-bit mode instructions.
@@ -97,7 +97,7 @@ start_protected_mode:
     jmp CODE_SEG:0x0100000  ; Jump to kernel entry point.
 
 
-MSG_REAL_MODE db "Successfully landed in 16 - bit Protected Mode.", 0
+MSG_REAL_MODE db "Entered to 16 - bit Real Mode.", 0
 
 times 510-($ - $$) db 0             ; When compiled, our program must fit into 512 bytes,
                                     ; with the last two bytes being the magic number,

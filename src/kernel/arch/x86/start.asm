@@ -31,8 +31,9 @@ kernel_entry_point:
     call print_string_pm            ; Use our 32 - bit print routine.
 
     jmp kernel_main
+    jmp $
 
 %include "./print_string_pm.asm"
 %include "./enable_A20_line.asm"
 
-MSG_PROT_MODE db "Successfully landed in 32 - bit Protected Mode.", 0
+MSG_PROT_MODE db "Entered to 32 - bit Protected Mode.", 0

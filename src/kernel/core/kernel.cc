@@ -1,8 +1,13 @@
+#include "kernel.hh"
+extern "C"
+{
+#include "../arch/x86/video.h"
+}
 
 extern "C"
 {
     void kernel_main()
     {
-        return;
+        video_clear();
     }
 }
