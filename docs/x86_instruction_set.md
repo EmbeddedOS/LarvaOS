@@ -41,11 +41,13 @@ LOOP
 
 ### 1.3. 32-bit data registers
 
-Four 32-bit data registers are used for arithmetic, logical, and other operations. These 32-bit registers can be used in three ways:
+The register with an "`E`" prefix can only be used in protected mode. Four 32-bit data registers are used for arithmetic, logical, and other operations. These 32-bit registers can be used in three ways:
 
 * As complete 32-bit data registers: `EAX`, `EBX`, `ECX`, `EDX`.
 * Lower halves of the 32-bit registers can be used as four 16-bit data registers: `AX`, `BX`, `CX` and `DX`.
 * Lower and higher halves of the above-mentioned four 16-bit registers can be used as eight 8-bit data registers: `AH`, `AL`, `BH`, `BL`, `CH`, `CL`, `DH`, and `DL`.
+
+`ESI` and `EDI` are general purpose registers. If a variable is to have register storage class, it is often stored in either `ESI` or `EDI`. A few instructions use `ESI` and `EDI` as pointers to source and destination addresses when copying a block of data. Most compilers preserve the value of `ESI` and `EDI` across function calls | not generally true of the accumulator registers.
 
 ## 2. Define data
 

@@ -2,24 +2,76 @@
 
 A multitasking operating system and kernel with an interactive shell.
 
-Assembles a binary file from assembly file.
-nasm -f bin boot.asm -o boot.bin
+## Using bless command to see your own kernel image
 
-Disassembles a binary file:
-ndisasm boot.binemu-system-x86_64 -hda boot.bin -S -gdb stdio
+bless - graphical hexadecimal Gtk# editor.
+Edit  the  FILEs  as a `sequence of bytes`, allowing read/write, search, pattern finding,  efficient  query-replace,  multi-tabbing,  customized data-views, plugins, and many other features. Using bless command:
 
-run OS:
-    qemu-system-x86_64 -hda boot.bin
+```bash
+bless ./bin/LavaOS.img
+```
 
-run gdb with qemu remote target:
-    gdb
-    target remote | qemu-system-x86_64 -hda boot.bin -S -gdb stdio
+## Run your OS using qemu
 
-switching to assembly in gdb:
-    layout asm
+```bash
+qemu-system-x86_64 -hda ./bin/LavaOS.img
+```
 
+## Using cross compiler
+
+```bash
+./bin/cross/bin/$TARGET-gcc --version   # For compile C files.
+./bin/cross/bin/$TARGET-g++ --version   # For compile C++ files.
+./bin/cross/bin/$TARGET-ld              # Linker.
+```
+
+## Assemble a assembly file with nasm
+
+```bash
+nasm -f bin file_name.asm -o file_name.bin
+```
+
+To disassemble it, simply using `ndisasm` command:
+
+```bash
+ndisasm boot.binemu-system-x86_64 -hda file_name.bin -S -gdb stdio
+```
+
+## Debug my kernel image with gdb
+
+First, entering to gdb mode:
+
+```bash
+gdb
+```
+
+Adding traceable symbol file:
+
+```bash
+add-symbol-file /bin/kernel.o 0x0100000
+```
+
+Set break point in symbol:
+
+```bash
+break kernel_entry_point
+```
+
+Start debugging with remote target:
+
+```bash
+target remote | qemu-system-x86_64 -hda ./bin/LavaOS.img -S -gdb stdio
+```
+
+Switching to assembly:
+
+```bash
+layout asm
+```
+
+And step by step.
 prints out registers in both raw format (hex) and natural format in gdb:
-    info registers
 
-run cross compiler:
-    /bin/cross/bin/$TARGET-gcc --version
+```bash
+info registers
+```
