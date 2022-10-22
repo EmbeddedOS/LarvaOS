@@ -11,9 +11,8 @@ help:
 	@echo ""
 
 all:
-# Build the kernel first.
 	make -C ./src/kernel/lib all
-	make -C ./src/kernel all	
+	make -C ./src/kernel all
 
 clean:
 	make -C ./src/kernel/lib clean

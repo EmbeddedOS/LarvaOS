@@ -4,7 +4,7 @@
 global kernel_entry_point   ; We make a global symbol 'kernel entry point',
                             ; so the linker can find and jump to it first.
 
-extern kernel_main
+extern kernel_main, __CTOR_LIST__, __CTOR_END__, __DTOR_LIST__, __DTOR_END__
 
 KERNEL_DATA_SEG equ 0x10
 
@@ -30,8 +30,27 @@ kernel_entry_point:
     mov ebx , MSG_PROT_MODE
     call print_string_pm            ; Use our 32 - bit print routine.
 
-    jmp kernel_main
-    jmp $
+call_global_constructors:           ; Call all global constructors of static, global object.
+   mov ebx, __CTOR_LIST__
+   jmp check_constructor_list
+call_constructor:
+   call [ebx]
+   add ebx, 0x04
+check_constructor_list:
+   cmp ebx, __CTOR_END__
+   jb call_constructor
+
+    jmp kernel_main                 ; jump to kernel main function.
+
+call_global_destructors:            ; Call all global destructors of static, global object.
+   mov ebx, __DTOR_LIST__
+   jmp check_destructor_list
+call_destructor:
+   call [ebx]
+   add ebx, 0x04
+check_destructor_list:
+   cmp ebx, __DTOR_END__
+   jb call_destructor
 
 %include "./print_string_pm.asm"
 %include "./enable_A20_line.asm"

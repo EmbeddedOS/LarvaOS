@@ -2,53 +2,60 @@
 #include <string.h>
 
 uint16_t *g_video_mem = (uint16_t *)VIDEO_MEMORY;
-uint16_t g_x_cursor = 0;
-uint16_t g_y_cursor = 0;
+size_t g_row = 0;
+size_t g_column = 0;
+uint8_t g_color = VGA_COLOR_WHITE;
 
-void video_clear()
+static void putc(char c);
+
+static void putc_at(char c, uint8_t color, size_t x, size_t y);
+
+static inline uint8_t vga_entry_color(enum vga_color fg, enum vga_color bg)
 {
-    //g_x_cursor = 0;
-    //g_y_cursor = 0;
-    memset(g_video_mem, 0, SCREEN_SIZE);
-          //    unsigned short *g_video_mem = (unsigned short *)0xB8000;
-          //  for (int i = 0; i < 1000; i++)
-         //    g_video_mem[i] = (0 << 8) | ' ';
-        // for (int i = 0; i < 100; i++)
-          //   g_video_mem[i] = (2 << 8) | 'A';
+    return fg | bg << 4;
 }
 
-void putc(char c)
+static inline uint16_t vga_entry(char c, uint8_t color)
 {
+    return c | color << 8;
 }
 
-void putc_with_color(char c, color_t color)
+void clear()
 {
-    g_video_mem[1] = (color << 8) | c;
+    g_row = 0;
+    g_column = 0;
+    g_color = VGA_COLOR_WHITE;
+    memset(g_video_mem, 0, g_screen_size);
 }
 
-
-uint16_t get_x()
+void write(const char *data, size_t size)
 {
-    return g_x_cursor;
-}
-
-uint16_t get_y()
-{
-    return g_y_cursor;
-}
-
-void set_x(uint16_t x)
-{
-    if (x <= VGA_WIDTH)
+    for (size_t i = 0; i < size; i++)
     {
-        g_x_cursor = x;
+        putc(data[i]);
     }
 }
 
-void set_y(uint16_t y)
+static void putc(char c)
 {
-    if (y <= VGA_HEIGHT)
+    putc_at(c, g_color, g_column, g_row);
+    if (++g_column == g_vga_width)
     {
-        g_x_cursor = y;
+        g_column = 0;
+        if (++g_row == g_vga_height)
+        {
+            g_row = 0;
+        }
     }
+}
+
+static void putc_at(char c, uint8_t color, size_t x, size_t y)
+{
+    const size_t index = y * g_vga_width + x;
+    g_video_mem[index] = vga_entry(c, color);
+}
+
+void set_color(enum vga_color c)
+{
+    g_color = c;
 }

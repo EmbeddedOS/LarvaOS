@@ -1,9 +1,0 @@
-ARCH=x86
-ASM=nasm
-ASM_BIN_FLAG=-f bin
-ASM_ELF_FLAG=-f elf -g
-LD=i686-elf-ld
-LD_FLAG=-g -relocatable
-SC=i686-elf-gcc
-SCC=i686-elf-g++
-FLAGS = -g -ffreestanding -falign-jumps -falign-functions -falign-labels -falign-loops -fstrength-reduce -fomit-frame-pointer -finline-functions -Wno-unused-function -fno-builtin -Werror -Wno-unused-label -Wno-cpp -Wno-unused-parameter -nostdlib -nostartfiles -nodefaultlibs -Wall -O0 -Iinc

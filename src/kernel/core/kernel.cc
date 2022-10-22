@@ -1,13 +1,11 @@
 #include "kernel.hh"
-extern "C"
-{
-#include "../arch/x86/video.h"
-}
+#include "iostream.hh"
 
 extern "C"
 {
     void kernel_main()
     {
-        video_clear();
+        lava::cout << "Hello world";
+        while(1) {}
     }
 }

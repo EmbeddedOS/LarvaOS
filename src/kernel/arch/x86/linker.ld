@@ -43,6 +43,21 @@ SECTIONS
                    */
     }
 
+	.data : ALIGN (0x1000)
+    { /** GNU C++ will will normally arrange to put the addresses of 
+        * global constructors and destructors into the .ctors and .dtors 
+        * sections. We need to get the lists to call constructors and
+        * destructors of global objects before and after using main().
+        */
+	   __CTOR_LIST__ = .;
+	   *(.ctor*)
+	   __CTOR_END__ = .;
+	   __DTOR_LIST__ = .;
+	   *(.dtor*)
+	   __DTOR_END__ = .;
+	   *(.data)
+	}
+
     .asm : ALIGN(0x1000)
     {
         *(.asm)
