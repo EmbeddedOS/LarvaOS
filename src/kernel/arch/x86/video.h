@@ -3,7 +3,7 @@
 
 #define VIDEO_MEMORY 0xB8000
 
-static const size_t g_vga_width = 100;
+static const size_t g_vga_width = 80;
 static const size_t g_vga_height = 40;
 static const size_t g_screen_size = (g_vga_width * g_vga_height);
 

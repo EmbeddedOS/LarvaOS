@@ -1,5 +1,6 @@
-
 #pragma once
+
+
 /*
  *	General C-Types
  */

@@ -77,3 +77,7 @@ check_destructor_list:
    cmp ebx, __DTOR_END__
    jb call_destructor
 ```
+
+## Why do we use 'extern "C"' keyword multiple times?
+
+Any object file built by gcc, when linking against object file built by g++, needs to use the external "C" keyword.

@@ -28,7 +28,16 @@ namespace lava
         explicit ostream();
         ~ostream() = default;
         ostream &operator<<(const char *str);
+        ostream &operator<<(const int &num);
+        ostream &operator<<(const lava::ostream::color &color);
+        ostream &operator<<(ostream &(*func)(ostream &out));
     };
+
+    inline ostream &endl(ostream &out)
+    {
+        out << "\n";
+        return out;
+    }
 
     extern ostream cout;
 }
