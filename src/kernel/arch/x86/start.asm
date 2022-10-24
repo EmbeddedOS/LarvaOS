@@ -56,3 +56,5 @@ check_destructor_list:
 %include "./enable_A20_line.asm"
 
 MSG_PROT_MODE db "Entered to 32 - bit Protected Mode.", 0
+
+times 512-($ - $$) db 0             ; Align kernel entry point into a complete sector.
