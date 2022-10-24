@@ -81,3 +81,7 @@ check_destructor_list:
 ## Why do we use 'extern "C"' keyword multiple times?
 
 Any object file built by gcc, when linking against object file built by g++, needs to use the external "C" keyword.
+
+## Why do we align sections (.data, .text, etc.) to 0x1000? what is 0x1000?
+
+`0x1000` is size of a typical memory page. We are aligning sections to the page size.
