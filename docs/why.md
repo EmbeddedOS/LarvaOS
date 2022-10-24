@@ -4,32 +4,32 @@
 
 First, need to understand what is a binary file? A Binary file is a pure binary file with no memory fix-ups or relocations, it has explicit instructions to be loaded at a specific memory address.
 
-`boot.asm` file is written as a raw data, will be build in 'raw' binary format and become **First sector** in our disk (size of this file is alway 512 bytes).
+The [boot.asm](../src/kernel/arch/x86/boot/boot.asm) file is written as a raw data, will be build in 'raw' binary format and become **First sector** in our disk image (size of this file is alway 512 bytes).
 
 The (legacy) BIOS checks boot-able devices for a boot signature a so called magic number. So, when it checks our OS across devices, it will find the **First sector**.
 
 The **Master Boot Record (MBR)** is the information in the first sector of any hard disk or diskette that identifies how and where an operating system is located so that it can be boot(loaded) into the computer's main storage or random access memory.
 
-## Why while building our kernel image, we need to use dd command to copy files to final image?
+## Why while building our kernel image, we need to use dd or cat command to copy files to final image?
 
-We are emulating a OS that is booted from a disk. We are actually building a disk, that contains **MBR** partition, and multiple another partitions.
+We are emulating a OS that is booted from a disk. We are actually building a disk image, that contains **MBR** partition, and multiple another partitions.
 
 The disk format for our OS:
 
 ```text
 |   sector 1    |    sector 2   |   sector 3   |...         |
 |0           511|512        1023|1024      1535|...         |
-|MBR            |Our kernel image ...                       |
+|MBR            |Our kernel     | Our kernel   |...         |
 |               |                                           |    
 ```
 
-We only simply copy kernel image to the disk.
+We only simply copy kernel image to the disk image, put it right behind the **First Sector** (our boot-sector). So, as a result, the kernel image will become **Second Sector** and the next sectors (depend on size of kernel image) in our disk image.
 
-We set entry point is `0x0100000`, so boot loader will jump from MBR code to kernel code based on information of **Global Descriptor Table**, no matter where we put the kernel image on disk.
+We set entry point is `0x0100000`, so boot loader will jump from MBR code to kernel code based on information of **Global Descriptor Table**.
 
-## Why do we copy 100 sectors to our disk?
+## Why do we copy 100 sectors to our disk image?
 
-What if our kernel does not fill up to a sector (lesser than 512 bytes or not divisible by 512). So, we need to fill null data to our disk, and ATA driver in the boot-loader will can read all the kernel code (ATA drive read at least 100 sectors a time). If our kernel image increase size in future, we will continue increase this number.
+What if our kernel does not fill up to a sector (lesser than 512 bytes or not divisible by 512). So, we need to fill null data to our disk image, and ATA driver in the boot-loader will can read all the kernel code (ATA drive read at least 100 sectors a time). If our kernel image increase size in future, we will continue increase this number.
 
 ## Why do we describe '.ctor' and '.dtor' sections linker script file? what are they?
 
