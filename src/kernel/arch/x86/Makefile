@@ -8,7 +8,7 @@ SCC=i686-elf-g++
 FLAGS=-g -ffreestanding -falign-jumps -falign-functions -falign-labels -falign-loops -fstrength-reduce -fomit-frame-pointer -finline-functions -Wno-unused-function -fno-builtin -Werror -Wno-unused-label -Wno-cpp -Wno-unused-parameter -nostdlib -nostartfiles -nodefaultlibs -Wall -O0 -Iinc
 
 FIRST_SECTOR:=arch/$(ARCH)/boot/boot.bin 
-OBJS:=arch/$(ARCH)/start.o arch/$(ARCH)/video.o
+OBJS:=arch/$(ARCH)/start.o arch/$(ARCH)/video.o arch/$(ARCH)/interrupt.o
 LINKER_SCRIPT:=./arch/$(ARCH)/linker.ld
 INCLUDES:=-I./arch/$(ARCH)/ -I./arch/$(ARCH)/boot/ -I./arch/$(ARCH)/utils -I./lib/include/
 

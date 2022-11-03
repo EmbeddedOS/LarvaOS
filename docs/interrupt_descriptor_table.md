@@ -69,7 +69,8 @@ Gate Descriptor (32-bit):
   * 0b0111 or 0x7: 16-bit Trap Gate
   * 0b1110 or 0xE: 32-bit Interrupt Gate
   * 0b1111 or 0xF: 32-bit Trap Gate
-
+* DPL: A 2-bit value which defines the CPU Privilege Levels which are allowed to access this interrupt via the INT instruction. Hardware interrupts ignore this mechanism.
+* P: Present bit. Must be set (1) for the descriptor to be valid.
 
 **Example Code**
 C Struct:
@@ -81,7 +82,7 @@ struct InterruptDescriptor32 {
    uint8_t  zero;            // unused, set to 0
    uint8_t  type_attributes; // gate type, dpl, and p fields
    uint16_t offset_2;        // offset bits 16..31
-};
+} __attribute__((packed));
 ```
 
 Example type_attributes values that people are likely to use (assuming DPL is 0):
