@@ -31,3 +31,58 @@ The OS is supposed to handle the interrupt by talking to the keyboard, via `in` 
 Every time the CPU is done with one machine instruction, it will check if the PIC's pin has notified an interrupt. if that's the case, it stores some state information on the stack (So that it can return to whatever it is doing currently, when the INT is done being serviced by the OS) and jumps to a location pointed to by the IDT. The OS takes over from there. The current program can, however, prevent the CPU from being disturbed by interrupts by means of the *interrupt flag* (IF in status register). As long as this flag is cleared, the CPU ignores the PIC's requests and continues running the current program. Assembly instructions `cli` and `sti` can control that flags.
 
 ## 5. From the OS's perspective
+
+When an interrupt comes in, the [IDT](interrupt_descriptor_table.md) (which is setup by the OS in advance) is used to jump to code portion of the OS, which handles the interrupt (and therefore called the "interrupt handler" or "[Interrupt Service Routines](interrupt_service_routines.md)"). Usually the code interacts with the device, then returns to whatever it was doing previously with an `iret` instruction. before the `ret`, this code is executed, to tell the PIC that it's OK to send any new ot pending interrupts, because the current one is done. The PIC doesn't send any more interrupts until the cpu acknowledges the interrupt:
+
+```asm
+mov al, 20h
+out 20h, al
+```
+
+In the case of the keyboard input, the interrupt handler asks the keyboard which key was pressed, does something with the information, then acknowledges and return:
+
+```asm
+push eax    ;; make sure you don't damage current state
+in al,60h   ;; read information from the keyboard
+ 
+mov al,20h
+out 20h,al  ;; acknowledge the interrupt to the PIC
+pop eax     ;; restore state
+iret        ;; return to code executed before.
+```
+
+Whatever the CPU was previous doing is then resumed (unless another INT was received by the PIC while servicing this one, in which the PIC tells the CPU about it and a new interrupt handler is executed, once the CPU saves state information on the stack again).
+
+## 6. So how do I program this stuff?
+
+Step by step, now that you have grabbed the whole thing and know what's to be done:
+
+* Make space for the interrupt descriptor table.
+* Tell the CPU where that space is.
+* Tell the PIC that you no longer want to use the BIOS default.
+* Write a couple of ISR handlers for both IRQs and exceptions.
+* Put the addresses of the ISR handlers in the appropriate descriptor.
+* Enable all supported interrupts in the IRQ mask.
+
+## 7. General IBM-PC Compatible Interrupt Information
+
+Standard ISA IRQs
+
+|IRQ|Description|
+|---|-----------|
+|0|Programmable Interrupt Timer Interrupt|
+|1|Keyboard Interrupt|
+|2|Cascade (used internally by the two PICs. never raised)|
+|3|COM2 (if enabled)|
+|4|COM1 (if enabled)|
+|5|LPT2 (if enabled)|
+|6|Floppy Disk|
+|7|LPT1 / Unreliable "spurious" interrupt (usually)|
+|8|CMOS real-time clock (if enabled)|
+|9|Free for peripherals / legacy SCSI / NIC|
+|10|Free for peripherals / SCSI / NIC|
+|11|Free for peripherals / SCSI / NIC|
+|12|PS2 Mouse|
+|13|FPU / Coprocessor / Inter-processor|
+|14|Primary ATA Hard Disk|
+|15|Secondary ATA Hard Disk|
