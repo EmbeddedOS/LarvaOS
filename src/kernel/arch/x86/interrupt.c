@@ -1,8 +1,25 @@
 #include "interrupt.h"
 #include <string.h>
+#include <video.h>
+#include <types.h>
+#include <string.h>
+
+// Assembly functions.
+extern void load_interrupt_descriptor_table(void *ptr);
+
+extern void enable_interrupts();
+
+extern void disable_interrupts();
 
 struct idt_desc idt_descriptors[TOTAL_INTERRUPTS];
 struct idtr_desc idt_register;
+
+void idt_divide_by_zero()
+{
+   // write("Divide by Zero", 14);
+  //  while(1){}
+}
+
 
 void set_interrupt_handler(int pos, void *address)
 {
@@ -23,4 +40,17 @@ void init_interrupt_descriptor_table()
 
     idt_register.limit = size_of_descriptor_table - 1; // One less than the size of the IDT in bytes.
     idt_register.base = (uint32_t)idt_descriptors;     // The linear address of the Interrupt Descriptor Table (not the physical address, paging applies).
+
+    set_interrupt_handler(0, &idt_divide_by_zero);
+    load_interrupt_descriptor_table((void *)&idt_register);
+}
+
+void enable()
+{
+    enable_interrupts();
+}
+
+void disable()
+{
+    disable_interrupts();
 }

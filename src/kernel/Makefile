@@ -9,7 +9,8 @@ KLIB=../../bin/kernel_lib/
 # Adding architecture-independent code.
 OBJS+= ./core/kernel.o \
 	   ./core/iostream.o \
-
+	   ./core/architecture.o \
+	   
 INCLUDES+= -I.arch/$(ARCH)/ -I./ -I./core/ -I./runtime
 LIBS:=$(wildcard $(KLIB)*.a)
 

@@ -80,8 +80,31 @@ check_destructor_list:
 
 ## Why do we use 'extern "C"' keyword multiple times?
 
-Any object file built by gcc, when linking against object file built by g++, needs to use the external "C" keyword.
+Any object file built by gcc, when linking against object file built by g++, needs to use the external "C" keyword. Because symbol name formats are different.
 
 ## Why do we align sections (.data, .text, etc.) to 0x1000? what is 0x1000?
 
 `0x1000` is size of a typical memory page. We are aligning sections to the page size.
+
+## Why do not we use inline assembly function in C code instead of using bare assembly function in assembly file?
+
+Yeah, I know. They are the same. However, I want C and assembly should be kept separate. For example, using inline assembly:
+
+```c
+__asm__ ("lidt %0" :: "m"(idtr_descriptor));
+```
+
+Or writes into assembly function:
+
+```asm
+load_interrupt_descriptor_table:
+    push ebp            ; Push current base pointer to stack.
+    mov ebp, esp        ; Move the stack pointer into the base pointer,
+                        ; So we get reference to our frame.
+
+    mov ebx, [ebp+8]
+    lidt [ebx]
+
+    pop ebp            ; Pop current base pointer.
+    ret
+```
