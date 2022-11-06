@@ -1,8 +1,6 @@
 #include "interrupt.h"
 #include <string.h>
 #include <video.h>
-#include <types.h>
-#include <string.h>
 
 // Assembly functions.
 extern void load_interrupt_descriptor_table(void *ptr);
@@ -16,8 +14,7 @@ struct idtr_desc idt_register;
 
 void idt_divide_by_zero()
 {
-   // write("Divide by Zero", 14);
-  //  while(1){}
+    write("Divide by Zero", 14);
 }
 
 
@@ -29,7 +26,7 @@ void set_interrupt_handler(int pos, void *address)
     desc->selector = KERNEL_CODE_SELECTOR;
     desc->zero = 0x00;
     desc->type_attributes = 0xEE;             // 32-bit Interrupt Gate.
-    desc->offset_1 = (uint32_t)address >> 16; // Higher part of interrupt function's offset address.
+    desc->offset_2 = (uint32_t)address >> 16; // Higher part of interrupt function's offset address.
 }
 
 void init_interrupt_descriptor_table()

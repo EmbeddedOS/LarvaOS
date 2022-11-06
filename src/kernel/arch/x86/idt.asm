@@ -25,7 +25,3 @@ enable_interrupts:
 disable_interrupts:
     cli
     ret
-
-problem:
-    int 0
-    ret

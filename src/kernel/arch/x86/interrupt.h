@@ -5,6 +5,8 @@
 #define KERNEL_CODE_SELECTOR 0x08
 #define KERNEL_DATA_SELECTOR 0x10
 
+typedef void(*INTERRUPT_CALLBACK_FUNCTION)();
+
 /**
  * Interrupt Descriptor Table (32-bit).
  * The entries in the IDT are 8 bytes long and form a table like this:

@@ -1,6 +1,5 @@
 #pragma once
 
-
 /*
  *	General C-Types
  */
@@ -33,11 +32,3 @@ typedef int64_t             blkcnt_t;
 
 #define time_t              int64_t
 #define NULL                0
-
- 
-/*
- *	Interruption handler
- */
-typedef void (*int_handler)(void);
-
-

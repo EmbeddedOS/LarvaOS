@@ -11,7 +11,8 @@ FIRST_SECTOR:=arch/$(ARCH)/boot/boot.bin
 OBJS:=arch/$(ARCH)/start.o \
 	arch/$(ARCH)/video.o \
 	arch/$(ARCH)/interrupt.o \
-	arch/$(ARCH)/idt.o
+	arch/$(ARCH)/idt.o \
+	arch/$(ARCH)/io.o \
 
 LINKER_SCRIPT:=./arch/$(ARCH)/linker.ld
 INCLUDES:=-I./arch/$(ARCH)/ -I./arch/$(ARCH)/boot/ -I./arch/$(ARCH)/utils -I./lib/include/

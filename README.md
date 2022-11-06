@@ -39,6 +39,8 @@ ndisasm boot.binemu-system-x86_64 -hda file_name.bin -S -gdb stdio
 
 ## Debug my kernel image with gdb
 
+NOTE: We should use kernel.elf (kernel image) to add symbol instead of using disk image.
+
 First, entering to gdb mode:
 
 ```bash
