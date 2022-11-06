@@ -10,4 +10,7 @@ OS_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 [ ! -d $OS_DIR/build ] && mkdir $OS_DIR/build
 
 cd $OS_DIR
+
+make clean
 make all
+qemu-system-x86_64 -hda ./bin/LavaOS.img

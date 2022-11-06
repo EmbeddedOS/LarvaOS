@@ -3,7 +3,6 @@ section .asm
 global load_interrupt_descriptor_table
 global enable_interrupts
 global disable_interrupts
-global problem
 
 load_interrupt_descriptor_table:
     ; Make new call frame.
