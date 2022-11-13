@@ -16,19 +16,21 @@ KERNEL_DATA_SEG equ 0x10
 kernel_entry_point:
     ; By now we are assuredly in 32 - bit protected mode.
     ; Initialize registers and the stack once in Protected Mode.
-    mov ax, KERNEL_DATA_SEG         ; Now in PM, our old segments are meaningless,
-    mov ds, ax                      ; so we point our segment registers to the 
-    mov es, ax                      ; data selector we defined in our GDT.
-    mov fs, ax
-    mov gs, ax 
-    mov ss, ax
-    mov ebp, 0x00200000             ; Update our stack position so it is right 
-    mov esp, ebp                    ; at the top of the free space.
+   mov ax, KERNEL_DATA_SEG          ; Now in PM, our old segments are meaningless,
+   mov ds, ax                       ; so we point our segment registers to the 
+   mov es, ax                       ; data selector we defined in our GDT.
+   mov fs, ax
+   mov gs, ax 
+   mov ss, ax
+   mov ebp, 0x00200000              ; Update our stack position so it is right 
+   mov esp, ebp                     ; at the top of the free space.
 
-    call enable_A20_line            ; Enable A20 line.
+   call enable_A20_line             ; Enable A20 line.
 
-    mov ebx , MSG_PROT_MODE
-    call print_string_pm            ; Use our 32 - bit print routine.
+   call remap_master_PIC            ; Remap master PIC.
+
+   mov ebx , MSG_PROT_MODE
+   call print_string_pm             ; Use our 32 - bit print routine.
 
 call_global_constructors:           ; Call all global constructors of static, global object.
    mov ebx, __CTOR_LIST__
@@ -40,7 +42,7 @@ check_constructor_list:
    cmp ebx, __CTOR_END__
    jb call_constructor
 
-    jmp kernel_main                 ; jump to kernel main function.
+   jmp kernel_main                  ; jump to kernel main function.
 
 call_global_destructors:            ; Call all global destructors of static, global object.
    mov ebx, __DTOR_LIST__
@@ -52,8 +54,9 @@ check_destructor_list:
    cmp ebx, __DTOR_END__
    jb call_destructor
 
-%include "./print_string_pm.asm"
-%include "./enable_A20_line.asm"
+%include "./utils/print_string_pm.asm"
+%include "./boot/enable_A20_line.asm"
+%include "./boot/remap_master_PIC.asm"
 
 MSG_PROT_MODE db "Entered to 32 - bit Protected Mode.", 0
 
