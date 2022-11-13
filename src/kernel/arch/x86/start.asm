@@ -7,8 +7,6 @@ global kernel_entry_point   ; We make a global symbol 'kernel entry point',
 extern kernel_main, __CTOR_LIST__, __CTOR_END__, __DTOR_LIST__, __DTOR_END__
 
 KERNEL_DATA_SEG equ 0x10
-
-
 ; NOTE: this symbol will be loaded at address 0x0100000 by linker, so
 ; DO NOT push any codes in front of 'kernel_entry_point' symbol.
 ; If can not jump to this symbol, my OS will be crashed.
@@ -27,8 +25,6 @@ kernel_entry_point:
 
    call enable_A20_line             ; Enable A20 line.
 
-   call remap_master_PIC            ; Remap master PIC.
-
    mov ebx , MSG_PROT_MODE
    call print_string_pm             ; Use our 32 - bit print routine.
 
@@ -42,7 +38,8 @@ check_constructor_list:
    cmp ebx, __CTOR_END__
    jb call_constructor
 
-   jmp kernel_main                  ; jump to kernel main function.
+   call remap_master_PIC            ; Remap master PIC.
+   call kernel_main                 ; jump to kernel main function.
 
 call_global_destructors:            ; Call all global destructors of static, global object.
    mov ebx, __DTOR_LIST__
@@ -54,9 +51,12 @@ check_destructor_list:
    cmp ebx, __DTOR_END__
    jb call_destructor
 
+   jmp $
+
 %include "./utils/print_string_pm.asm"
 %include "./boot/enable_A20_line.asm"
 %include "./boot/remap_master_PIC.asm"
+
 
 MSG_PROT_MODE db "Entered to 32 - bit Protected Mode.", 0
 

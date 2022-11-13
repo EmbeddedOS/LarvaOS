@@ -3,6 +3,10 @@ section .asm
 global load_interrupt_descriptor_table
 global enable_interrupts
 global disable_interrupts
+global int21h
+extern int21h_handler
+global no_interrupt
+extern no_interrupt_handler
 
 load_interrupt_descriptor_table:
     ; Make new call frame.
@@ -18,9 +22,33 @@ load_interrupt_descriptor_table:
     ret                 ; Return.
 
 enable_interrupts:
+    push ebp
+    mov ebp, esp
     sti
+    pop ebp
     ret
 
 disable_interrupts:
+    push ebp
+    mov ebp, esp
     cli
+    pop ebp
     ret
+
+; Interrupt wrapper.
+int21h:
+    cli
+    pushad
+    call int21h_handler
+    popad
+    sti
+    iret
+
+; Interrupt wrapper.
+no_interrupt:
+    cli
+    pushad
+    call no_interrupt_handler
+    popad
+    sti
+    iret

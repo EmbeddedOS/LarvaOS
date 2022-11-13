@@ -13,4 +13,4 @@ cd $OS_DIR
 
 make clean
 make all
-qemu-system-x86_64 -hda ./bin/LavaOS.img
+qemu-system-i386 -hda ./bin/LavaOS.img
