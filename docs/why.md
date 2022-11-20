@@ -25,7 +25,33 @@ The disk format for our OS:
 
 We only simply copy kernel image to the disk image, put it right behind the **First Sector** (our boot-sector). So, as a result, the kernel image will become **Second Sector** and the next sectors (depend on size of kernel image) in our disk image.
 
-We set entry point is `0x0100000`, so boot loader will jump from MBR code to kernel code based on information of **Global Descriptor Table**.
+## What is exactly memory map of our OS?
+
+After boot-loader find kernel code and load them into RAM. Physical Address Space will look like:
+
+0x00000000  +---------------------------------------+
+            | Interrupts vector table (1024 bytes). |
+0x00000400  +---------------------------------------+
+            | BIOS Data area (256 bytes).           |
+0x00000500  +---------------------------------------+
+            | OS load area (30,464 bytes).          |
+0x00007C00  +---------------------------------------+
+            | MBR (512 bytes).                      |
+0x00007E00  +---------------------------------------+
+            | Boot Stack/Data area (512 bytes).     |
+0x00007FFF  +---------------------------------------+
+            |                                       |
+0x000A0000  +---------------------------------------+
+            | Video memory.                         |
+0x000C0000  +---------------------------------------+
+            |                                       |
+0x00010000  +---------------------------------------+
+            | Kernel Image (.text, .data, .ro, etc.)|
+            +---------------------------------------+
+            | Free Low memory.                      |
+0xC0000000  +---------------------------------------+
+            | Free High memory.                     |
+0xFFFFFFFF  +---------------------------------------+
 
 ## Why do we copy 100 sectors to our disk image?
 
