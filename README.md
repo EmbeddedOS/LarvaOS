@@ -77,3 +77,22 @@ prints out registers in both raw format (hex) and natural format in gdb:
 ```bash
 info registers
 ```
+
+## debug variable
+
+```bash
+gdb
+```
+
+In gdb:
+
+```bash
+add-symbol-file ./src/kernel/core/kernel.o 0x0100000
+target remote | qemu-system-x86_64 -hda ./bin/LavaOS.img -S -gdb stdio
+# Set break point in file-line
+break kernel.cc:21
+# continue
+c
+# print value of ptr variable
+print ptr
+```

@@ -30,6 +30,8 @@ enum vga_color
 
 void clear();
 
+void print(const char *data);
+
 void write(const char *data, size_t size);
 
 void set_color(enum vga_color);

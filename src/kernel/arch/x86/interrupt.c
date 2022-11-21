@@ -27,13 +27,11 @@ extern void no_interrupt();
 
 void int21h_handler()
 {
-    write("Keyboard pressed.", 17);
     outb(0x20, 0x20);
 }
 
 void no_interrupt_handler()
 {
-    write("No interrupt.", 13);
     outb(0x20, 0x20);
 }
 

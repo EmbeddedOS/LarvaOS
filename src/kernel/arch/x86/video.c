@@ -114,3 +114,8 @@ void set_color(enum vga_color c)
 {
     g_color = c;
 }
+
+void print(const char *data)
+{
+    write(data, strlen(data));
+}

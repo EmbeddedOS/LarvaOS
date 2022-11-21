@@ -1,7 +1,7 @@
 ARCH=x86
 include arch/$(ARCH)/Makefile
 
-KERNEL=kernel.elf
+KERNEL=kernel_image.o
 DISK_IMAGE=../../bin/LavaOS.img
 KLIB=../../bin/kernel_lib/
 

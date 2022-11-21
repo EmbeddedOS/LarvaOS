@@ -1,5 +1,6 @@
 #include "heap.h"
 #include "kheap.h"
+#include <video.h>
 
 struct heap g_kernel_heap;
 struct heap_table g_kernel_heap_table;
@@ -18,6 +19,18 @@ void kheap_init()
 
     if (res < 0)
     {
-        
+        print("Failed to initialize heap memory.");
     }
+}
+
+void kheap_init();
+
+void *kmalloc(size_t size)
+{
+    return malloc(&g_kernel_heap, size);
+}
+
+void kfree(void *ptr)
+{
+    return free(&g_kernel_heap, ptr);
 }

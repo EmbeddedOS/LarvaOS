@@ -15,7 +15,7 @@ using namespace lava;
 
 ostream &ostream::operator<<(const char *str)
 {
-    write(str, strlen(str));
+    print(str);
     return *this;
 }
 
@@ -23,7 +23,7 @@ ostream &ostream::operator<<(const int &num)
 {
     char str[32];
     itoa(num, str, 10);
-    write(str, strlen(str));
+    print(str);
     return *this;
 }
 
