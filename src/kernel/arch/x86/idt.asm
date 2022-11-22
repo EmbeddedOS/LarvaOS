@@ -22,17 +22,11 @@ load_interrupt_descriptor_table:
     ret                 ; Return.
 
 enable_interrupts:
-    push ebp
-    mov ebp, esp
     sti
-    pop ebp
     ret
 
 disable_interrupts:
-    push ebp
-    mov ebp, esp
     cli
-    pop ebp
     ret
 
 ; Interrupt wrapper.

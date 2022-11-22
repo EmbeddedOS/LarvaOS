@@ -9,8 +9,11 @@ using namespace lava;
 
 void arch::init()
 {
+    disable_interrupt();
     init_interrupt_descriptor_table();
     kheap_init();
+
+    enable_interrupt();
 }
 
 void arch::enable_interrupt()

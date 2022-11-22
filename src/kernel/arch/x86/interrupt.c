@@ -72,7 +72,6 @@ void set_interrupt_handler(int pos, void *address)
 
 void init_interrupt_descriptor_table()
 {
-    disable_interrupts();
     size_t size_of_descriptor_table = sizeof(idt_descriptors);
 
     memset(idt_descriptors, 0, size_of_descriptor_table);
@@ -88,8 +87,6 @@ void init_interrupt_descriptor_table()
     set_interrupt_handler(0, &idt_divide_by_zero);
     set_interrupt_handler(0x21, &int21h);
     load_interrupt_descriptor_table((void *)&idt_register);
-    init_pic();
-    enable_interrupts();
 }
 
 void enable()
