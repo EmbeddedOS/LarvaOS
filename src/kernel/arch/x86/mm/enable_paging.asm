@@ -13,7 +13,7 @@ paging_load_directory:
     mov ebp, esp
 
     mov eax, [ebp+8]
-    mov cr3, eax
+    mov cr3, eax        ; Load CR3 with the address of the page directory.
 
     pop ebp
     ret

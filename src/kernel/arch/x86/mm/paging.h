@@ -20,3 +20,7 @@ struct paging_4gb_chunk *paging_new_4gb(uint8_t flags);
 void paging_switching(uint32_t *directory);
 
 void enable_paging();
+
+int paging_get_indexes(void *virtual_address, uint32_t *directory_index_out, uint32_t *table_index_out);
+
+int paging_set_virtual_address(uint32_t *directory, void *virtual_address, uint32_t val);

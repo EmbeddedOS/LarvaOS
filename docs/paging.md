@@ -103,5 +103,3 @@ The exception is invoked:
 Paging is achieved though the [Memory Management Unit (MMU)](memory_management.md). On the x86, the MMU maps memory though a series of tables, two to be exact. They are the paging directory (PD), and the paging table (PT).
 
 Both tables contain 1024 4-bute entries, making them 4KiB each. In the paging directory, each entry points to a page table. In the page table, each entry points to a 4 KiB  physical page frame. Additional, each entry has bits controlling access protection and caching features of the structure to which it points. The entire system consisting of a page directory and page tables represents a linear 4-GiB virtual memory map.
-
-

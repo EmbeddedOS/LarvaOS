@@ -1,4 +1,5 @@
 #include "architecture.hh"
+#include "iostream.hh"
 
 extern "C"
 {
@@ -26,7 +27,6 @@ void arch::init()
     kernel_chunk = paging_new_4gb(PAGING_IS_WRITEABLE | PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
     paging_switching(kernel_chunk->directory_entry);
     enable_paging();
-
 
     enable_interrupt();
 }
