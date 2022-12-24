@@ -39,6 +39,7 @@ struct paging_4GB_chunk *make_new_4GB_virtual_memory_address_space(uint8_t flags
         directory[i] = (uint32_t)entry | flags | PAGING_IS_WRITEABLE;
     }
 
+    /* 3. Return 4GB chunk object for the caller. */
     struct paging_4GB_chunk *chunk_4GB = kzalloc(sizeof(struct paging_4GB_chunk));
     chunk_4GB->directory_entry = directory;
     return chunk_4GB;
