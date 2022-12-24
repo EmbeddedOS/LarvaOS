@@ -12,28 +12,39 @@ static bool paging_check_address_is_aligned(void *addr)
     return ((uint32_t)addr % PAGING_PAGE_SIZE) == 0;
 }
 
-struct paging_4gb_chunk *paging_new_4gb(uint8_t flags)
+struct paging_4GB_chunk *make_new_4GB_virtual_memory_address_space(uint8_t flags)
 {
+    /* 1. Creating a Blank Page Directory. The page directory should have exactly 1024 entries.*/
     uint32_t *directory = kzalloc(sizeof(uint32_t) * PAGING_TOTAL_ENTRIES_PER_TABLE);
-    int offset = 0;
 
+    /* 2. Creating Page Tables, each entry in the Page Directory is a pointer to a Page Table.*/
+    int offset = 0;
     for (int i = 0; i < PAGING_TOTAL_ENTRIES_PER_TABLE; i++)
-    {
+    { // this For loop make 1024 page tables, 
+      // initialise them with the flags,
+      // and causes the Page Directory Entries point to them.
+        
         uint32_t *entry = kzalloc(sizeof(uint32_t) * PAGING_TOTAL_ENTRIES_PER_TABLE);
         for (int j = 0; j < PAGING_TOTAL_ENTRIES_PER_TABLE; j++)
-        {
+        { // We will fill all 1024 entries in the table, mapping 4 megabytes.
+
+            // Bits 31-12 of address, 11-0 of flags.
+            // As the address is page aligned, it will always leave 12 bits zeroed.
             entry[j] = (offset + (j * PAGING_PAGE_SIZE)) | flags;
         }
+
         offset += (PAGING_TOTAL_ENTRIES_PER_TABLE * PAGING_PAGE_SIZE);
+
+        // Put the Page Table in the Page Directory.
         directory[i] = (uint32_t)entry | flags | PAGING_IS_WRITEABLE;
     }
 
-    struct paging_4gb_chunk *chunk_4gb = kzalloc(sizeof(struct paging_4gb_chunk));
-    chunk_4gb->directory_entry = directory;
-    return chunk_4gb;
+    struct paging_4GB_chunk *chunk_4GB = kzalloc(sizeof(struct paging_4GB_chunk));
+    chunk_4GB->directory_entry = directory;
+    return chunk_4GB;
 }
 
-void paging_switching(uint32_t *directory)
+void switch_to_paging_mode(uint32_t *directory)
 {
     paging_load_directory(directory);
     current_directory = directory;

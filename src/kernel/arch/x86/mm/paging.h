@@ -10,16 +10,16 @@
 #define PAGING_TOTAL_ENTRIES_PER_TABLE 1024
 #define PAGING_PAGE_SIZE 4096
 
-struct paging_4gb_chunk
+struct paging_4GB_chunk
 {
     uint32_t* directory_entry;
 };
 
-struct paging_4gb_chunk *paging_new_4gb(uint8_t flags);
+extern void enable_paging();
 
-void paging_switching(uint32_t *directory);
+struct paging_4GB_chunk *make_new_4GB_virtual_memory_address_space(uint8_t flags);
 
-void enable_paging();
+void switch_to_paging_mode(uint32_t *directory);
 
 int paging_get_indexes(void *virtual_address, uint32_t *directory_index_out, uint32_t *table_index_out);
 

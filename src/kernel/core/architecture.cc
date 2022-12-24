@@ -24,8 +24,8 @@ void arch::init()
     kheap_init();
 
     /* 3. Setup paging, switch to kernel paging chunk, and enable paging.*/
-    kernel_chunk = paging_new_4gb(PAGING_IS_WRITEABLE | PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
-    paging_switching(kernel_chunk->directory_entry);
+    kernel_chunk = make_new_4GB_virtual_memory_address_space(PAGING_IS_WRITEABLE | PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
+    switch_to_paging_mode(kernel_chunk->directory_entry);
     enable_paging();
 
     enable_interrupt();

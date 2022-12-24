@@ -8,7 +8,7 @@ namespace lava
 {
     class arch
     {
-        paging_4gb_chunk *kernel_chunk{nullptr};
+        paging_4GB_chunk *kernel_chunk{nullptr};
 
     public:
         explicit arch();
