@@ -39,6 +39,7 @@ int disk_read_sectors(int lba, int sectors, void *buf)
 
     return 0;
 }
+
 void disk_init()
 {
     memset(&disk, 0, sizeof(disk));
