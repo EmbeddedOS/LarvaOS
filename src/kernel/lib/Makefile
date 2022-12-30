@@ -4,6 +4,7 @@ SCC=i686-elf-g++
 FLAGS=-w -m32 -Wa,--32  -g -nostdlib -nostdinc -nodefaultlibs -trigraphs  -I ./include -c
 OBJS= ./src/string.c \
 	  ./src/stdlib.c \
+	  ./src/ctype.c
 
 OBJO = $(OBJS:.c=.o) 
 OBJ=libc.a
