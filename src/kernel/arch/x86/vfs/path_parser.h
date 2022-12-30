@@ -1,10 +1,7 @@
 #pragma once
 
-struct path_root
-{
-    int drive_no;
-    struct path_part *first;
-};
+#define FILESYSTEM_MAX_PATH_LENGTH 100
+#define FILESYSTEM_ROOT_PATH "/"
 
 struct path_part
 {
