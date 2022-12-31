@@ -37,7 +37,7 @@ static char *get_and_remove_prefix_path(const char **parent_path)
     int position = suffix_path - (*parent_path);
 
     if (position == 0)
-    {
+    { // Skip the forward slash.
         *parent_path += 1;
         return get_and_remove_prefix_path(parent_path);
     }
