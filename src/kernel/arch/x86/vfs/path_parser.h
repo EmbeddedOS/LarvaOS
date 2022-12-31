@@ -5,6 +5,8 @@
 
 struct path_part
 {
-    const char *part;
+    char *part;
     struct path_part *next;
 };
+
+struct path_part *path_parse(const char *path);

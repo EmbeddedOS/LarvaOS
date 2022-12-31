@@ -6,6 +6,7 @@ extern "C"
 #include <interrupt.h>
 #include <mm/kheap.h>
 #include <disk.h>
+#include <vfs/path_parser.h>
 }
 
 using namespace lava;
@@ -32,8 +33,15 @@ void arch::init()
     switch_to_paging_mode(kernel_chunk->directory_entry);
     enable_paging();
 
-
     enable_interrupt();
+
+    /* Init file system. */
+    struct path_part *root = path_parse("/home/larva/os.img");
+    struct path_part *part = root;
+    while (part) {
+        lava::cout<< part->part<<lava::endl;
+        part = part->next;
+    }
 }
 
 void arch::enable_interrupt()

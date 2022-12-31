@@ -26,6 +26,22 @@ int memcmp(const void *p1, const void *p2, size_t c)
     return res;
 }
 
+void *memcpy(void *d, const void *s, size_t n)
+{
+    char *dest;
+    char *src;
+
+    dest = (char *)d;
+    src = (char *)s;
+
+    while (n--)
+    {
+        *dest++ = *src++;
+    }
+
+    return d;
+}
+
 size_t strlen(const char *s)
 {
     size_t i = 0;
@@ -47,4 +63,17 @@ size_t strnlen(const char *s, size_t count)
     }
 
     return (sc - s);
+}
+
+char *strchr(const char *s, int c)
+{
+    for (; *s != (char)c; s++)
+    {
+        if (*s == 0)
+        {
+            return NULL;
+        }
+    }
+
+    return (char *)s;
 }
