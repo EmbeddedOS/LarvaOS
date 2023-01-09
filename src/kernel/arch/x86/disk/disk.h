@@ -12,4 +12,5 @@ struct disk
 };
 
 void disk_init();
+struct disk *get_disk(int index);
 int disk_read_blocks(struct disk *idisk, int lba, int sectors, void *buf);
