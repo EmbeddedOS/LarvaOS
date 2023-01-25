@@ -13,7 +13,8 @@ OBJS:=arch/$(ARCH)/start.o \
 	arch/$(ARCH)/interrupt.o \
 	arch/$(ARCH)/idt.o \
 	arch/$(ARCH)/io.o \
-	arch/$(ARCH)/disk.o \
+	arch/$(ARCH)/disk/disk.o \
+	arch/$(ARCH)/disk/stream.o \
 	arch/$(ARCH)/mm/heap.o \
 	arch/$(ARCH)/mm/kheap.o \
 	arch/$(ARCH)/mm/paging.o \

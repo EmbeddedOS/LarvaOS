@@ -30,12 +30,36 @@ BITS 16     ; 16 bit instruction.
             ; Since all intel based start up with 16-bit instructions,
             ; we have to start with 16-bit instructions before switch to protected mode to use 32-bit instructions.
 
-; -- Entry point.
+; Common structure of the Boot Sector used by most FAT versions for IBM compatible x86 machines since DOS 2.0:
+; Reference link: https://en.wikipedia.org/wiki/Design_of_the_FAT_file_system
+; First 3 bytes is jump instruction.
 jmp short _start
 nop
 
-; -- OEM Parameter Block / BIOS Parameter Block.
-times 33 db 0   ; Set up BIOS parameter block, this is necessary to avoid corrupt data. 
+OEMIdetifier db 'LARVAOS '      ; OEM Name (8-bit)(padded with spaces 0x20). 
+                                ; This value determines in which system the disk was formatted.
+BytesPerSector      dw 0x200    ; Bytes per logical sector; the most common value is 512.
+SectorsPerCluster   db 0x80     ; Logical sectors per cluster. Allowed values are 1, 2, 4, 8, 16, 32, 64, and 128. 
+ReservedSectors     dw 200      ; Count of reserved logical sectors. The number of logical sectors before the first FAT in the file system image. 
+                                ; Reserved sectors are our kernel code will be stored in a file.
+FATcopies           db 0x02     ; Number of File Allocation Tables. Almost always 2; RAM disks might use 1.
+RootDirEntries      dw 0x40     ; Maximum number of FAT12 or FAT16 root directory entries.
+NumSectors          dw 0x00     ; Total logical sectors. 0 for FAT32. 
+MediaType           db 0xF8     ; Media descriptor: 0xF8 - Fixed disk, etc.
+SectorsPerFAT       dw 0x100    ; Logical sectors per File Allocation Table for FAT12/FAT16.
+
+SectorsPerTrack     dw 0x20
+NumberOfHeads       dw 0x40
+HiddenSectors       dd 0x00
+SectorsBig          dd 0x773594
+
+; Extended BIOS Parameter Block (Dos 4.0)
+DriveNumber             db 0x80 ; Physical drive number (0x00 for (first) removable media, 0x80 for (first) fixed disk as per INT 13h).
+WinNTBit                db 0x00
+Signature               db 0x29
+VolumeID                dd 0xD105           ; Volume ID (serial number)
+VolumeIDString          db 'LARVAOS    '    ; 11 bytes of Partition Volume Label.
+SystemIDString          db 'FAT16   '       ; 8 bytes of File system type.
 
 _start:
     jmp 0:start ; by jumping to segment 0 and address offset 0x7C00, 

@@ -96,3 +96,11 @@ c
 # print value of ptr variable
 print ptr
 ```
+
+## mount the disk image to your host
+
+```bash
+sudo mount -t vfat ./bin/LavaOS.img /mnt/d/
+# do some thing ...
+sudo umount /mnt/d/
+```

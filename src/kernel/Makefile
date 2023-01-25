@@ -22,7 +22,7 @@ all: os-image
 # which is the combination of our compiled bootsector and kernel.
 os-image: $(FIRST_SECTOR) $(KERNEL)
 	cat $^ > $(DISK_IMAGE)
-	dd if=/dev/zero bs=512 count=100 >> $(DISK_IMAGE)
+	dd if=/dev/zero bs=1048576 count=16 >> $(DISK_IMAGE)
 
 $(KERNEL): $(OBJS)
 	$(SCC) $^ $(LIBS) $(FLAGS) -T $(LINKER_SCRIPT) -o $@ 

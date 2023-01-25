@@ -56,3 +56,8 @@ int disk_stream_read(struct disk_stream *stream, void *buf, int total)
 out:
     return result;
 }
+
+void release_disk_stream(struct disk_stream *stream)
+{
+    kfree(stream);
+}
