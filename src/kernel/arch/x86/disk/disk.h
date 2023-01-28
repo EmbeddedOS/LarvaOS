@@ -4,11 +4,12 @@
 #define PHYSICAL_HARD_DISK_TYPE 0
 typedef unsigned int disk_t;
 
+struct filesystem;
 struct disk
 {
     disk_t type;
     int sector_size;
-    int id;
+    struct filesystem *fs;
 };
 
 void disk_init();

@@ -19,7 +19,8 @@ OBJS:=arch/$(ARCH)/start.o \
 	arch/$(ARCH)/mm/kheap.o \
 	arch/$(ARCH)/mm/paging.o \
 	arch/$(ARCH)/mm/enable_paging.o \
-	arch/$(ARCH)/vfs/path_parser.o
+	arch/$(ARCH)/vfs/path_parser.o \
+	arch/$(ARCH)/vfs/file.o
 
 LINKER_SCRIPT:=./arch/$(ARCH)/linker.ld
 INCLUDES:=-I./arch/$(ARCH)/ -I./arch/$(ARCH)/boot/ -I./arch/$(ARCH)/utils -I./lib/include/

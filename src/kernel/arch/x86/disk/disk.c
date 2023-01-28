@@ -3,6 +3,7 @@
 #include <io.h>
 #include <string.h>
 #include <errno.h>
+#include <vfs/file.h>
 
 struct disk disk;
 
@@ -45,6 +46,7 @@ void disk_init()
     memset(&disk, 0, sizeof(disk));
     disk.type = PHYSICAL_HARD_DISK_TYPE;
     disk.sector_size = DISK_SECTOR_SIZE;
+    disk.fs = fs_resolve(&disk);
 }
 
 struct disk *get_disk(int index)
