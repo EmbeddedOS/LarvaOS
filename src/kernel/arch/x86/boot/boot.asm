@@ -56,7 +56,10 @@ SectorsBig          dd 0x773594
 ; Extended BIOS Parameter Block (Dos 4.0)
 DriveNumber             db 0x80 ; Physical drive number (0x00 for (first) removable media, 0x80 for (first) fixed disk as per INT 13h).
 WinNTBit                db 0x00
-Signature               db 0x29
+Signature               db 0x29 ; The boot record extensions introduced with DOS 4.0 start with a magic 40 (0x28) or 41 (0x29). 
+                                ; Typically FAT drivers look only at the number of clusters to distinguish FAT12, FAT16, and FAT32:
+                                ; the human readable strings identifying the FAT variant in the boot record are ignored, 
+                                ; because they exist only for media formatted with DOS 4.0 or later.
 VolumeID                dd 0xD105           ; Volume ID (serial number)
 VolumeIDString          db 'LARVAOS    '    ; 11 bytes of Partition Volume Label.
 SystemIDString          db 'FAT16   '       ; 8 bytes of File system type.

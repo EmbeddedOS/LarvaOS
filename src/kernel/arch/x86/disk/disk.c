@@ -46,6 +46,7 @@ void disk_init()
     memset(&disk, 0, sizeof(disk));
     disk.type = PHYSICAL_HARD_DISK_TYPE;
     disk.sector_size = DISK_SECTOR_SIZE;
+    disk.id = 0; // Default ID for our disk.
     disk.fs = fs_resolve(&disk);
 }
 

@@ -2,9 +2,13 @@
 #include <types.h>
 #include <errno.h>
 #include <string.h>
-#include <disk/disk.h>
+#include <disk/stream.h>
+#include <mm/kheap.h>
+#include <stdbool.h>
 
 typedef unsigned int FAT_ITEM_TYPE;
+
+// The boot record extensions introduced with DOS 4.0 start with a magic 40 (0x28) or 41 (0x29).
 #define FAT16_SIGNATURE 0x29
 #define FAT16_FAT_ENTRY_SIZE 0x02
 #define FAT16_BAD_SECTOR 0xFF7
@@ -34,8 +38,8 @@ struct fat_extended_header
 } __attribute__((packed));
 
 struct fat_header
-{
-    uint8_t short_jmp_ins[3];
+{                             // Common structure of the Boot Sector used by most FAT versions for IBM compatible x86 machines.
+    uint8_t short_jmp_ins[3]; // First 3 bytes is jump instruction.
     uint8_t oem_identifier[8];
     uint16_t bytes_per_sector;
     uint8_t sectors_per_cluster;
@@ -112,7 +116,7 @@ struct fat_private_data
 
     // Used to stream the file allocation table.
     struct disk_stream *fat_read_stream;
-    
+
     // Used to stream the directory.
     struct disk_stream *directory_stream;
 };
@@ -122,6 +126,109 @@ struct filesystem fat16_fs =
         open : fat16_open,
         resolve : fat16_resolve
     };
+
+static void fat16_init_private_data(struct disk *disk, struct fat_private_data *private)
+{
+    memset(private, 0, sizeof(struct fat_private_data));
+    private->cluster_read_stream = create_disk_stream(disk->id);
+    private->fat_read_stream = create_disk_stream(disk->id);
+    private->directory_stream = create_disk_stream(disk->id);
+}
+
+static int fat16_get_total_items_for_directory(struct disk *disk, int directory_start_sector)
+{
+    struct fat_directory_item item;
+    struct fat_directory_item empty_item;
+    memset(&empty_item, 0, sizeof(empty_item));
+    struct fat_private_data *private = (struct fat_private_data *)disk->fs_private_data;
+
+    int res = 0;
+    int total = 0;
+    int directory_start_pos = directory_start_sector * disk->sector_size;
+    struct disk_stream *stream = private->directory_stream;
+    if (disk_stream_seek(stream, directory_start_pos) != 0)
+    {
+        res = -EIO;
+        goto out;
+    }
+
+    while (true)
+    {
+        if (disk_stream_read(stream, &item, sizeof(item)) != 0)
+        {
+            res = -EIO;
+            goto out;
+        }
+
+        if (item.filename[0] == 0xE5)
+        { // Directory[0] = 0xE5 indicates the directory entry is free (available).
+            continue;
+        }
+
+        if (item.filename[0] == 0x00)
+        { // Directory[0] = 0x00 also indicates the directory entry is free (available).
+            // However, this is an additional indicator that `all directory entries following
+            // the current free entry are also free. So, we done!!`
+            break;
+        }
+
+        total++;
+    }
+
+out:
+    return res;
+}
+
+static int fat16_sector_to_absolute(struct disk *disk, int sector)
+{
+    return sector * disk->sector_size;
+}
+
+static int fat16_get_root_directory(struct disk *disk, struct fat_private_data *private, struct fat_directory *directory)
+{
+    int res = 0;
+    struct fat_header *primary_header = &private->header.primary_header;
+    int root_dir_sector_pos = (primary_header->fat_copies * primary_header->sectors_per_fat) + primary_header->reserved_sectors;
+    int root_dir_entries = private->header.primary_header.root_dir_entries;
+    int root_dir_size = root_dir_entries * sizeof(struct fat_directory_item);
+    int total_sectors = root_dir_size / disk->sector_size;
+
+    if (root_dir_size % disk->sector_size)
+    { // Plus a sector (512 bytes) if root dir size remainder few (< 512 byte).
+        total_sectors += 1;
+    }
+
+    int total_items = fat16_get_total_items_for_directory(disk, root_dir_sector_pos);
+
+    struct fat_directory_item *dir = kzalloc(root_dir_size);
+    if (dir == NULL)
+    {
+        res = -ENOMEM;
+        goto out;
+    }
+
+    // Seek to root directory position.
+    struct disk_stream *stream = private->directory_stream;
+    if (disk_stream_seek(stream, fat16_sector_to_absolute(disk, root_dir_sector_pos)) != 0)
+    {
+        res = -EIO;
+        goto out;
+    }
+
+    // Read Root directory data from disk.
+    if (disk_stream_read(stream, dir, root_dir_size) != 0)
+    {
+        res = -EIO;
+        goto out;
+    }
+
+    directory->item = dir;
+    directory->total = total_items;
+    directory->sector_pos = root_dir_sector_pos;
+    directory->ending_sector_pos = root_dir_sector_pos + (root_dir_size / disk->sector_size);
+out:
+    return res;
+}
 
 struct filesystem *fat16_init()
 {
@@ -136,5 +243,52 @@ void *fat16_open(struct disk *disk, struct path_part *path, file_mode mode)
 
 int fat16_resolve(struct disk *disk)
 {
-    return -EIO;
+    int res = 0;
+    struct fat_private_data *fat_private = kzalloc(sizeof(struct fat_private_data));
+    fat16_init_private_data(disk, fat_private);
+
+    disk->fs_private_data = fat_private;
+    disk->fs = &fat16_fs;
+
+    struct disk_stream *stream = create_disk_stream(disk->id);
+    if (stream == NULL)
+    {
+        res = -ENOMEM;
+        goto out;
+    }
+
+    // Get FAT filesystem header of the Boot Sector.
+    if (disk_stream_read(stream, &fat_private->header, sizeof(fat_private->header)) != 0)
+    {
+        res = -EIO;
+        goto out;
+    }
+
+    // Check FAT 16 signature is present or not.
+    if (fat_private->header.shared.extended_header.signature != FAT16_SIGNATURE)
+    {
+        res = -EIO;
+        goto out;
+    }
+
+    // Check the root directory is load successfully or not.
+    if (fat16_get_root_directory(disk, fat_private, &fat_private->root_dir) != 0)
+    {
+        res = -EIO;
+        goto out;
+    }
+
+out:
+    if (stream)
+    { // Release our stream.
+        release_disk_stream(stream);
+    }
+
+    if (res < 0)
+    {
+        kfree(fat_private);
+        disk->fs_private_data = NULL;
+    }
+
+    return res;
 }

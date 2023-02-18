@@ -9,7 +9,9 @@ struct disk
 {
     disk_t type;
     int sector_size;
+    int id;
     struct filesystem *fs;
+    void* fs_private_data;
 };
 
 void disk_init();
