@@ -1,4 +1,5 @@
 #include "file.h"
+#include "fat16.h"
 #include <types.h>
 #include <string.h>
 #include <stdbool.h>
@@ -11,7 +12,7 @@ struct file_descriptor *file_descriptors[MAX_FILE_DESCRIPTORS];
 
 static void fs_static_load()
 {
-    // TODO: init Fat 16 file system.
+    fs_insert_filesystem(fat16_init());
 }
 
 static struct filesystem **fs_get_free_filesystem()
@@ -90,8 +91,8 @@ struct filesystem *fs_resolve(struct disk *disk)
     struct filesystem *fs = NULL;
     for (int i = 0; i < MAX_FILESYSTEMS; i++)
     {
-        if (filesystems[i] != NULL && filesystems[i]->resolve(disk) == NULL)
-        { // TODO: Need to check resolve() function pointer is not NULL.
+        if (filesystems[i] != NULL && filesystems[i]->resolve != NULL && filesystems[i]->resolve(disk) == NULL)
+        {
             fs = filesystems[i];
             break;
         }

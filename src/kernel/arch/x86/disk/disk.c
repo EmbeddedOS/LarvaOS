@@ -3,7 +3,7 @@
 #include <io.h>
 #include <string.h>
 #include <errno.h>
-#include <vfs/file.h>
+#include <fs/file.h>
 
 struct disk disk;
 

@@ -24,7 +24,7 @@ enum
 struct disk;
 struct path_part;
 typedef void *(*FS_OPEN_FUNCTION)(struct disk *disk, struct path_part *path, file_mode mode);
-typedef void *(*FS_RESOLVE_FUNCTION)(struct disk *disk);
+typedef int (*FS_RESOLVE_FUNCTION)(struct disk *disk);
 
 struct filesystem
 {
