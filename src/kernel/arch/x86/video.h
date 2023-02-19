@@ -32,6 +32,8 @@ void clear();
 
 void print(const char *data);
 
+void print_number(int x);
+
 void write(const char *data, size_t size);
 
 void set_color(enum vga_color);

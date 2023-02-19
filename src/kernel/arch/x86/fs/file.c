@@ -7,6 +7,7 @@
 #include <mm/kheap.h>
 #include <disk/disk.h>
 #include <errno.h>
+#include <video.h>
 
 struct filesystem *filesystems[MAX_FILESYSTEMS];
 
@@ -30,7 +31,7 @@ static struct filesystem **fs_get_free_filesystem()
     return NULL;
 }
 
-static int make_new_file_descriptor(struct file_descriptor *fd_out)
+static int make_new_file_descriptor(struct file_descriptor **fd_out)
 {
     int res = -ENOMEM;
     for (int i = 0; i < MAX_FILE_DESCRIPTORS; i++)
@@ -41,7 +42,7 @@ static int make_new_file_descriptor(struct file_descriptor *fd_out)
             // File descriptor will start at 1.
             fd->index = i + 1;
             file_descriptors[i] = fd;
-            fd_out = fd;
+            *fd_out = fd;
             res = 0;
             break;
         }
@@ -95,6 +96,10 @@ void fs_init()
 
 void fs_insert_filesystem(struct filesystem *fs)
 {
+    print("Inserting filesystem: ");
+    print(fs->name);
+    print(".\n");
+
     struct filesystem **free_fs;
     free_fs = fs_get_free_filesystem();
 
@@ -106,6 +111,9 @@ void fs_insert_filesystem(struct filesystem *fs)
     }
 
     *free_fs = fs;
+    print("Inserting filesystem: ");
+    print(fs->name);
+    print(" successfully.\n");
 }
 
 struct filesystem *fs_resolve(struct disk *disk)
@@ -115,6 +123,9 @@ struct filesystem *fs_resolve(struct disk *disk)
     {
         if (filesystems[i] != NULL && filesystems[i]->resolve != NULL && filesystems[i]->resolve(disk) == NULL)
         {
+            print("The disk is resolved with filesystem: ");
+            print(filesystems[i]->name);
+            print(".\n");
             fs = filesystems[i];
             break;
         }
@@ -158,18 +169,26 @@ int fopen(const char *file_name, const char *mode_of_operation)
         goto out;
     }
 
+    print("Trying to open: ");
+    print(file_name);
+    print(" using fs: ");
+    print(disk->fs->name);
+    print(" of the disk: ");
+    print_number(disk->id);
+    print("\n");
+
     void *fd_private_data = disk->fs->open(disk, root, mode);
     if (IS_ERR(fd_private_data))
     {
-        res = -PTR_ERR(fd_private_data);
+        res = PTR_ERR(fd_private_data);
         goto out;
     }
 
     struct file_descriptor *fd = NULL;
-    res = make_new_file_descriptor(fd);
+    res = make_new_file_descriptor(&fd);
     if (res < 0)
     {
-        return res;
+        goto out;
     }
 
     fd->fs = disk->fs;
@@ -178,7 +197,7 @@ int fopen(const char *file_name, const char *mode_of_operation)
     res = fd->index;
 out:
     if (res < 0)
-    { // fopen should not return negative values,
+    {   // fopen should not return negative values,
         // return 0 indicate a error.
         res = 0;
     }

@@ -16,6 +16,7 @@
 #define EIO 5
 #define ENOMEM 12
 #define EINVAL 22
+#define EROFS 30
 
 #define IS_ERR_VALUE(x) (unsigned long)(void *)(x) >= (unsigned long)-MAX_ERRNO
 

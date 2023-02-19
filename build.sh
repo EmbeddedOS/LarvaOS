@@ -13,4 +13,8 @@ cd $OS_DIR
 
 make clean
 make all
+
+sudo mount -t vfat ./bin/LavaOS.img /mnt/d/
+cp ./data.txt /mnt/d/
+sudo umount /mnt/d/
 qemu-system-i386 -hda ./bin/LavaOS.img

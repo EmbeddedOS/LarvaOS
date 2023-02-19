@@ -1,6 +1,7 @@
 #include "video.h"
 #include <string.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 uint16_t *g_video_mem = (uint16_t *)VIDEO_MEMORY;
 size_t g_row = 0;
@@ -118,4 +119,11 @@ void set_color(enum vga_color c)
 void print(const char *data)
 {
     write(data, strlen(data));
+}
+
+void print_number(int x)
+{
+    char str[32];
+    itoa(x, str, 10);
+    print(str);
 }

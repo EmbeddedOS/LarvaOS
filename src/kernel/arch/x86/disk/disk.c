@@ -4,6 +4,7 @@
 #include <string.h>
 #include <errno.h>
 #include <fs/file.h>
+#include <video.h>
 
 struct disk disk;
 
@@ -43,6 +44,7 @@ int disk_read_sectors(int lba, int sectors, void *buf)
 
 void disk_init()
 {
+    print("Initializing disk...\n");
     memset(&disk, 0, sizeof(disk));
     disk.type = PHYSICAL_HARD_DISK_TYPE;
     disk.sector_size = DISK_SECTOR_SIZE;

@@ -20,11 +20,10 @@ void kheap_init()
 
     if (res < 0)
     {
-        print("Failed to initialize heap memory.");
+        print("Failed to initialize heap memory.\n");
     }
+    print("Initialize heap successfully.\n");
 }
-
-void kheap_init();
 
 void *kmalloc(size_t size)
 {

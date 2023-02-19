@@ -1,6 +1,7 @@
 #include <mm/kheap.h>
 #include <stdbool.h>
 #include "stream.h"
+#include <video.h>
 
 struct disk_stream *create_disk_stream(int disk_id)
 {
