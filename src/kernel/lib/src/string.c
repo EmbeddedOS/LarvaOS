@@ -82,7 +82,27 @@ char *strcpy(char *d, const char *s)
 {
     char *tmp = d;
 
-    while ((*d++ = *s++) != 0) ;
+    while ((*d++ = *s++) != 0)
+        ;
 
     return tmp;
+}
+
+int strncmp(const char *s1, const char *s2, int c)
+{
+    int result = 0;
+
+    while (c)
+    {
+        result = *s1 - *s2++;
+
+        if ((result != 0) || (*s1++ == 0))
+        {
+            break;
+        }
+
+        c--;
+    }
+
+    return result;
 }

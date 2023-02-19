@@ -37,7 +37,6 @@ void arch::init()
     switch_to_paging_mode(kernel_chunk->directory_entry);
     enable_paging();
 
-    enable_interrupt();
 
     struct path_part *root = path_parse("/home/larva/os");
     struct path_part *part = root;
@@ -46,6 +45,8 @@ void arch::init()
         lava::cout << part->part << lava::endl;
         part = part->next;
     }
+
+    enable_interrupt();
 }
 
 void arch::enable_interrupt()

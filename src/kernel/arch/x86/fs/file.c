@@ -1,9 +1,11 @@
 #include "file.h"
 #include "fat16.h"
+#include "path_parser.h"
 #include <types.h>
 #include <string.h>
 #include <stdbool.h>
 #include <mm/kheap.h>
+#include <disk/disk.h>
 #include <errno.h>
 
 struct filesystem *filesystems[MAX_FILESYSTEMS];
@@ -59,6 +61,26 @@ static struct file_descriptor *get_file_descriptor(int index)
     return file_descriptors[index - 1];
 }
 
+static file_mode get_file_mode_by_string(const char *str)
+{
+    file_mode mode = FILE_MODE_INVALID;
+
+    if (strncmp(str, "r", 1) == 0)
+    {
+        mode = FILE_MODE_READ;
+    }
+    else if (strncmp(str, "w", 1) == 0)
+    {
+        mode = FILE_MODE_WRITE;
+    }
+    else if (strncmp(str, "a", 1) == 0)
+    {
+        mode = FILE_MODE_APPEND;
+    }
+
+    return mode;
+}
+
 void fs_load()
 {
     memset(filesystems, 0, sizeof(filesystems));
@@ -103,5 +125,63 @@ struct filesystem *fs_resolve(struct disk *disk)
 
 int fopen(const char *file_name, const char *mode_of_operation)
 {
-    return -EIO;
+    int res = 0;
+
+    // Parse filename.
+    struct path_part *root = path_parse(file_name);
+    if (root == NULL)
+    {
+        res = -EINVAL;
+        goto out;
+    }
+
+    // Ensure the disk exists.
+    // We only use the disk with a drive number of 0.
+    struct disk *disk = get_disk(0);
+    if (disk == NULL)
+    {
+        res = -EIO;
+        goto out;
+    }
+
+    // The disk have a bound filesystem.
+    if (disk->fs == NULL)
+    {
+        res = -EIO;
+        goto out;
+    }
+
+    file_mode mode = get_file_mode_by_string(mode_of_operation);
+    if (mode == FILE_MODE_INVALID)
+    {
+        res = -EINVAL;
+        goto out;
+    }
+
+    void *fd_private_data = disk->fs->open(disk, root, mode);
+    if (IS_ERR(fd_private_data))
+    {
+        res = -PTR_ERR(fd_private_data);
+        goto out;
+    }
+
+    struct file_descriptor *fd = NULL;
+    res = make_new_file_descriptor(fd);
+    if (res < 0)
+    {
+        return res;
+    }
+
+    fd->fs = disk->fs;
+    fd->p = fd_private_data;
+    fd->disk = disk;
+    res = fd->index;
+out:
+    if (res < 0)
+    { // fopen should not return negative values,
+        // return 0 indicate a error.
+        res = 0;
+    }
+    // If success, it return a file descriptor.
+    return res;
 }
