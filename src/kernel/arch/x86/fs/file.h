@@ -1,4 +1,5 @@
 #pragma once
+#include <types.h>
 
 #define MAX_FILESYSTEMS 12
 #define MAX_FILE_DESCRIPTORS 512
@@ -24,6 +25,7 @@ enum
 struct disk;
 struct path_part;
 typedef void *(*FS_OPEN_FUNCTION)(struct disk *disk, struct path_part *path, file_mode mode);
+typedef int (*FS_READ_FUNCTION)(struct disk *disk, void *p, uint32_t size, uint32_t nmemb, char *out);
 typedef int (*FS_RESOLVE_FUNCTION)(struct disk *disk);
 
 struct filesystem
@@ -32,6 +34,7 @@ struct filesystem
     // Filesystem should return zero from resolve if the provided disk is using its filesystem.
     FS_RESOLVE_FUNCTION resolve;
     FS_OPEN_FUNCTION open;
+    FS_READ_FUNCTION read;
 };
 
 struct file_descriptor
@@ -47,3 +50,4 @@ void fs_insert_filesystem(struct filesystem *fs);
 struct filesystem *fs_resolve(struct disk *disk);
 
 int fopen(const char *file_name, const char *mode_of_operation);
+int fread(int fd, void* ptr, uint32_t size, uint32_t nmemb);

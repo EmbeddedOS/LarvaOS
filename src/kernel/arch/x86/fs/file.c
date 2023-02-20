@@ -197,10 +197,36 @@ int fopen(const char *file_name, const char *mode_of_operation)
     res = fd->index;
 out:
     if (res < 0)
-    {   // fopen should not return negative values,
+    { // fopen should not return negative values,
         // return 0 indicate a error.
         res = 0;
     }
     // If success, it return a file descriptor.
+    return res;
+}
+
+int fread(int fd, void *ptr, uint32_t size, uint32_t nmemb)
+{
+    int res = 0;
+    if (fd < 1 || size == 0 || nmemb == 0)
+    {
+        res = -EINVAL;
+        goto out;
+    }
+
+    struct file_descriptor *desc = get_file_descriptor(fd);
+    if (fd == NULL)
+    {
+        res = -EINVAL;
+        goto out;
+    }
+
+    res = desc->fs->read(desc->disk,
+                         desc->p,
+                         size,
+                         nmemb,
+                         (char *)ptr);
+
+out:
     return res;
 }

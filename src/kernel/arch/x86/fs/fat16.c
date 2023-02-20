@@ -502,9 +502,11 @@ static struct fat_item *fat16_find_item_in_directory(struct disk *disk, struct f
 
     for (int i = 0; i < directory->total; i++)
     {
+        // Remove space, etc.
         fat16_get_full_relative_filename(&directory->item[i], tmp_filename, sizeof(tmp_filename));
+
         if (strcasecmp(tmp_filename, name) == 0)
-        {
+        { // the filename that get from the disk has the upcase format, for example: FILENAME.TXT
             // Found the file, let's create a new fat item.
             print("FAT16 filesystem is found the file: ");
             print(name);
