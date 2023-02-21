@@ -218,7 +218,7 @@ int fread(int fd, void *ptr, uint32_t size, uint32_t nmemb)
     }
 
     struct file_descriptor *desc = get_file_descriptor(fd);
-    if (fd == NULL)
+    if (desc == NULL)
     {
         res = -EINVAL;
         goto out;
@@ -230,6 +230,21 @@ int fread(int fd, void *ptr, uint32_t size, uint32_t nmemb)
                          nmemb,
                          (char *)ptr);
 
+out:
+    return res;
+}
+
+int fseek(int fd, int offset, file_seek_mode whence)
+{
+    int res = 0;
+    struct file_descriptor *desc = get_file_descriptor(fd);
+    if (desc == NULL)
+    {
+        res = -EINVAL;
+        goto out;
+    }
+
+    res = desc->fs->seek(desc->p, offset, whence);
 out:
     return res;
 }
