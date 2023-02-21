@@ -39,6 +39,7 @@ void arch::init()
 
     int fd = fopen("/data.txt", "r");
     char buf[20];
+    fseek(fd, 3, SEEK_SET);
     fread(fd, buf, 20, 1);
     lava::cout << "content of the file: " << buf << lava::endl;
 

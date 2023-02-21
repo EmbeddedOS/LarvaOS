@@ -129,7 +129,8 @@ struct filesystem fat16_fs =
     {
         open : fat16_open,
         resolve : fat16_resolve,
-        read : fat16_read
+        read : fat16_read,
+        seek : fat16_seek
     };
 
 static void fat16_init_private_data(struct disk *disk, struct fat_private_data *private)
@@ -698,6 +699,43 @@ int fat16_read(struct disk *disk, void *p, uint32_t size, uint32_t nmemb, char *
     }
 
     res = nmemb;
+out:
+    return res;
+}
+
+int fat16_seek(void *p, uint32_t offset, file_seek_mode seek_mode)
+{
+    int res = 0;
+    struct fat_file_descriptor *fat_desc = p;
+    struct fat_item *desc_item = fat_desc->item;
+    if (desc_item->type != FAT_ITEM_TYPE_FILE)
+    {
+        res = -EINVAL;
+        goto out;
+    }
+
+    struct fat_directory_item *item = desc_item->item;
+    if (offset >= item->filesize)
+    {
+        res = -EIO;
+        goto out;
+    }
+
+    switch (seek_mode)
+    {
+    case SEEK_SET:
+        fat_desc->pos = offset;
+        break;
+    case SEEK_CUR:
+        fat_desc->pos += offset;
+        break;
+    case SEEK_END: // Not implemented.
+                   // TODO: Implement seek end mode.
+    default:
+        res = -EINVAL;
+        break;
+    }
+
 out:
     return res;
 }
