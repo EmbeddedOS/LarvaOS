@@ -205,6 +205,9 @@ out:
     return res;
 }
 
+/**
+ * nmemb: number of memory block.
+ */
 int fread(int fd, void *ptr, uint32_t size, uint32_t nmemb)
 {
     int res = 0;

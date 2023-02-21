@@ -128,7 +128,8 @@ struct fat_private_data
 struct filesystem fat16_fs =
     {
         open : fat16_open,
-        resolve : fat16_resolve
+        resolve : fat16_resolve,
+        read : fat16_read
     };
 
 static void fat16_init_private_data(struct disk *disk, struct fat_private_data *private)
@@ -368,7 +369,7 @@ static int fat16_read_internal_from_stream(struct disk *disk, struct disk_stream
 
     int offset_from_cluster = offset % size_of_cluster_bytes;
     int starting_sector = fat16_cluster_to_sector(private, cluster_to_use);
-    int starting_pos = (starting_sector * disk->sector_size) * offset_from_cluster;
+    int starting_pos = (starting_sector * disk->sector_size) + offset_from_cluster;
     int total_to_read = (total > size_of_cluster_bytes) ? size_of_cluster_bytes : total;
     res = disk_stream_seek(stream, starting_pos);
     if (res < 0)
@@ -674,5 +675,29 @@ out:
         print("FAT16 filesystem is failed to resolve the disk.\n");
     }
 
+    return res;
+}
+
+int fat16_read(struct disk *disk, void *p, uint32_t size, uint32_t nmemb, char *out)
+{
+    int res = 0;
+    struct fat_file_descriptor *fat_desc = p;
+    struct fat_directory_item *item = fat_desc->item->item;
+    int offset = fat_desc->pos;
+
+    for (uint32_t i = 0; i < nmemb; i++)
+    {
+        res = fat16_read_internal(disk, fat16_get_first_cluster(item), offset, size, out);
+        if (res < 0)
+        {
+            goto out;
+        }
+
+        out += size;
+        offset += size;
+    }
+
+    res = nmemb;
+out:
     return res;
 }

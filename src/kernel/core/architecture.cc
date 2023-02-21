@@ -37,16 +37,11 @@ void arch::init()
     switch_to_paging_mode(kernel_chunk->directory_entry);
     enable_paging();
 
-    struct path_part *root = path_parse("/home/larva/os");
-    struct path_part *part = root;
-    while (part)
-    {
-        lava::cout << part->part << lava::endl;
-        part = part->next;
-    }
-
     int fd = fopen("/data.txt", "r");
-    lava::cout << fd << lava::endl;
+    char buf[20];
+    fread(fd, buf, 20, 1);
+    lava::cout << "content of the file: " << buf << lava::endl;
+
     enable_interrupt();
 }
 
