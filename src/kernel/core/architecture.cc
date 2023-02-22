@@ -43,6 +43,14 @@ void arch::init()
     fread(fd, buf, 20, 1);
     lava::cout << "content of the file: " << buf << lava::endl;
 
+    file_stat stat;
+
+    fstat(fd, &stat);
+    lava::cout << "stat file: " << stat.filename
+               << ", extension: " << stat.ext
+               << ", filesize: " << stat.filesize
+               << lava::endl;
+
     enable_interrupt();
 }
 

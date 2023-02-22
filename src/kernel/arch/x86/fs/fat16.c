@@ -130,7 +130,8 @@ struct filesystem fat16_fs =
         open : fat16_open,
         resolve : fat16_resolve,
         read : fat16_read,
-        seek : fat16_seek
+        seek : fat16_seek,
+        stat : fat16_stat
     };
 
 static void fat16_init_private_data(struct disk *disk, struct fat_private_data *private)
@@ -505,10 +506,12 @@ static struct fat_item *fat16_find_item_in_directory(struct disk *disk, struct f
     for (int i = 0; i < directory->total; i++)
     {
         // Remove space, etc.
+        // file name origin format: DATA    TXT
         fat16_get_full_relative_filename(&directory->item[i], tmp_filename, sizeof(tmp_filename));
 
         if (strcasecmp(tmp_filename, name) == 0)
-        { // the filename that get from the disk has the upcase format, for example: FILENAME.TXT
+        {   // After remove space, the filename that get from the disk
+            // has the upcase format, for example: DATA.TXT
             // Found the file, let's create a new fat item.
             print("FAT16 filesystem is found the file: ");
             print(name);
@@ -735,6 +738,43 @@ int fat16_seek(void *p, uint32_t offset, file_seek_mode seek_mode)
         res = -EINVAL;
         break;
     }
+
+out:
+    return res;
+}
+
+int fat16_stat(struct disk *disk, void *p, struct file_stat *stat)
+{
+    int res = 0;
+
+    struct fat_file_descriptor *fat_desc = p;
+    struct fat_item *desc_item = fat_desc->item;
+    if (desc_item->type != FAT_ITEM_TYPE_FILE)
+    {
+        res = -EINVAL;
+        goto out;
+    }
+
+    struct fat_directory_item *item = desc_item->item;
+    strcpy(stat->filename, (const char *)item->filename);
+    strcpy(stat->ext, (const char *)item->ext);
+
+    if (item->attribute & FAT_FILE_READ_ONLY)
+    {
+        stat->attribute |= FILE_STAT_READ_ONLY;
+    }
+    else
+    {
+        stat->attribute = 0x00;
+    }
+
+    stat->reserved = item->reserved;
+    stat->creation_time = item->creation_time;
+    stat->creation_date = item->creation_date;
+    stat->last_access = item->last_access;
+    stat->last_mod_time = item->last_mod_time;
+    stat->last_mod_date = item->last_mod_date;
+    stat->filesize = item->filesize;
 
 out:
     return res;
