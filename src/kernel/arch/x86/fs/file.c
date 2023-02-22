@@ -248,3 +248,20 @@ int fseek(int fd, int offset, file_seek_mode whence)
 out:
     return res;
 }
+
+int fstat(int fd, struct file_stat *stat)
+{
+    int res = 0;
+
+    struct file_descriptor *desc = get_file_descriptor(fd);
+    if (desc == NULL)
+    {
+        res = -EINVAL;
+        goto out;
+    }
+
+    res = desc->fs->stat(desc->disk, desc->p, stat);
+
+out:
+    return res;
+}

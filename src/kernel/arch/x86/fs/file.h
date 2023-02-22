@@ -6,7 +6,7 @@
 
 typedef unsigned int file_seek_mode;
 typedef unsigned int file_mode;
-
+typedef unsigned int FILE_STAT_FLAGS;
 enum
 {
     SEEK_SET = 0,
@@ -22,11 +22,19 @@ enum
     FILE_MODE_INVALID
 };
 
+enum
+{
+    FILE_STAT_READ_ONLY = 0x01
+};
+
+
 struct disk;
 struct path_part;
+struct file_stat;
 typedef void *(*FS_OPEN_FUNCTION)(struct disk *disk, struct path_part *path, file_mode mode);
 typedef int (*FS_READ_FUNCTION)(struct disk *disk, void *p, uint32_t size, uint32_t nmemb, char *out);
 typedef int (*FS_SEEK_FUNCTION)(void *p, uint32_t offset, file_seek_mode seek_mode);
+typedef int (*FS_STAT_FUNCTION)(struct disk *disk, void *p, struct file_stat* stat);
 
 typedef int (*FS_RESOLVE_FUNCTION)(struct disk *disk);
 
@@ -38,6 +46,7 @@ struct filesystem
     FS_OPEN_FUNCTION open;
     FS_READ_FUNCTION read;
     FS_SEEK_FUNCTION seek;
+    FS_STAT_FUNCTION stat;
 };
 
 struct file_descriptor
@@ -48,6 +57,11 @@ struct file_descriptor
     void *p;           // Private data for internal file descriptor.
 };
 
+struct file_stat {
+    FILE_STAT_FLAGS flags;
+    uint32_t fsize;
+};
+
 void fs_init();
 void fs_insert_filesystem(struct filesystem *fs);
 struct filesystem *fs_resolve(struct disk *disk);
@@ -55,3 +69,4 @@ struct filesystem *fs_resolve(struct disk *disk);
 int fopen(const char *file_name, const char *mode_of_operation);
 int fread(int fd, void* ptr, uint32_t size, uint32_t nmemb);
 int fseek(int fd, int offset, file_seek_mode whence);
+int fstat(int fd, struct file_stat* stat);
