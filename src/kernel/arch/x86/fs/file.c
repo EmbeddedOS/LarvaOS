@@ -265,3 +265,20 @@ int fstat(int fd, struct file_stat *stat)
 out:
     return res;
 }
+
+int fclose(int fd)
+{
+    int res = 0;
+
+    struct file_descriptor *desc = get_file_descriptor(fd);
+    if (desc == NULL)
+    {
+        res = -EINVAL;
+        goto out;
+    }
+
+    res = desc->fs->close(desc->p);
+
+out:
+    return res;
+}
