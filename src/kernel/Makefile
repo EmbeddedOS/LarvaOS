@@ -10,7 +10,8 @@ KLIB=../../bin/kernel_lib/
 OBJS+= ./core/kernel.o \
 	   ./core/iostream.o \
 	   ./core/architecture.o \
-	   
+	   ./core/panic.o \
+
 INCLUDES+= -I.arch/$(ARCH)/ -I./ -I./core/ -I./runtime
 LIBS:=$(wildcard $(KLIB)*.a)
 
