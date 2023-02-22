@@ -52,6 +52,14 @@ out:
     return res;
 }
 
+static int release_file_descriptor(struct file_descriptor *fd)
+{
+    // File descriptor will start at 1.
+    file_descriptors[fd->index - 1] = NULL;
+    kfree(fd);
+    return 0;
+}
+
 static struct file_descriptor *get_file_descriptor(int index)
 {
     if (index <= 0 || index >= MAX_FILE_DESCRIPTORS)
@@ -278,6 +286,13 @@ int fclose(int fd)
     }
 
     res = desc->fs->close(desc->p);
+    if (res < 0)
+    {
+        goto out;
+    }
+
+    // Free file descriptor make by vfs open function.
+    release_file_descriptor(desc);
 
 out:
     return res;

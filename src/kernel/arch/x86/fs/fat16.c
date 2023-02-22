@@ -131,7 +131,8 @@ struct filesystem fat16_fs =
         resolve : fat16_resolve,
         read : fat16_read,
         seek : fat16_seek,
-        stat : fat16_stat
+        stat : fat16_stat,
+        close : fat16_close
     };
 
 static void fat16_init_private_data(struct disk *disk, struct fat_private_data *private)
@@ -510,7 +511,7 @@ static struct fat_item *fat16_find_item_in_directory(struct disk *disk, struct f
         fat16_get_full_relative_filename(&directory->item[i], tmp_filename, sizeof(tmp_filename));
 
         if (strcasecmp(tmp_filename, name) == 0)
-        {   // After remove space, the filename that get from the disk
+        { // After remove space, the filename that get from the disk
             // has the upcase format, for example: DATA.TXT
             // Found the file, let's create a new fat item.
             print("FAT16 filesystem is found the file: ");
@@ -778,4 +779,17 @@ int fat16_stat(struct disk *disk, void *p, struct file_stat *stat)
 
 out:
     return res;
+}
+
+static void fat16_free_file_descriptor(struct fat_file_descriptor *fat_desc)
+{
+    fat16_fat_item_free(fat_desc->item);
+    kfree(fat_desc);
+}
+
+int fat16_close(void *p)
+{
+    struct fat_file_descriptor *fat_desc = p;
+    fat16_free_file_descriptor(fat_desc);
+    return 0;
 }

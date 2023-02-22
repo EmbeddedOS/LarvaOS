@@ -50,6 +50,8 @@ void arch::init()
                << ", extension: " << stat.ext
                << ", filesize: " << stat.filesize
                << lava::endl;
+    fclose(fd);
+    lava::cout << "Close the file\n";
 
     enable_interrupt();
 }
