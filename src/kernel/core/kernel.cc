@@ -1,5 +1,5 @@
 #include "kernel.hh"
-#include "iostream.hh"
+#include <iostream.hh>
 #include "architecture.hh"
 
 extern "C"

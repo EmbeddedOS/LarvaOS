@@ -11,9 +11,9 @@ help:
 	@echo ""
 
 all:
-	make -C ./src/kernel/lib all
+	make -C ./src/utils_libc/ all
 	make -C ./src/kernel all
 
 clean:
-	make -C ./src/kernel/lib clean
+	make -C ./src/utils_libc/ clean
 	make -C ./src/kernel clean

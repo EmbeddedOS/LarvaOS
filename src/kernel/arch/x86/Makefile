@@ -10,6 +10,7 @@ FLAGS=-g -ffreestanding -falign-jumps -falign-functions -falign-labels -falign-l
 FIRST_SECTOR:=arch/$(ARCH)/boot/boot.bin 
 OBJS:=arch/$(ARCH)/start.o \
 	arch/$(ARCH)/video.o \
+	arch/$(ARCH)/panic.o \
 	arch/$(ARCH)/interrupt.o \
 	arch/$(ARCH)/idt.o \
 	arch/$(ARCH)/io.o \
@@ -25,7 +26,7 @@ OBJS:=arch/$(ARCH)/start.o \
 
 
 LINKER_SCRIPT:=./arch/$(ARCH)/linker.ld
-INCLUDES:=-I./arch/$(ARCH)/ -I./arch/$(ARCH)/boot/ -I./arch/$(ARCH)/utils -I./lib/include/
+INCLUDES:=-I./arch/$(ARCH)/ -I./arch/$(ARCH)/boot/ -I./arch/$(ARCH)/utils -I../utils_libc/include/
 
 $(FIRST_SECTOR): arch/$(ARCH)/boot/boot.asm
 	$(ASM) $(ASM_BIN_FLAG) $(INCLUDES) $< -o  $@
