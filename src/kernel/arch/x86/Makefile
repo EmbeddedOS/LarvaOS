@@ -13,6 +13,7 @@ OBJS:=arch/$(ARCH)/start.o \
 	arch/$(ARCH)/panic.o \
 	arch/$(ARCH)/interrupt.o \
 	arch/$(ARCH)/idt.o \
+	arch/$(ARCH)/gdt.o \
 	arch/$(ARCH)/io.o \
 	arch/$(ARCH)/disk/disk.o \
 	arch/$(ARCH)/disk/stream.o \

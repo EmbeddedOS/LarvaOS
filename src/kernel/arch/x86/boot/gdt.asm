@@ -1,7 +1,7 @@
 ; Segment descriptor is an 8-byte structure that define the following properties of a protected-mode segment:
 ; + Base address (32 bits), which define where the segment begins in physical memory.
 ; + Segment Limit (20 bits), which define the size of the segment.
-; + Various flags, which affect how the CPU interprets the segment, such as privilige level of code, read- or write-only.
+; + Various flags, which affect how the CPU interprets the segment, such as privilege level of code, read- or write-only.
 
 ; Structure of the segment descriptor:
 ;   |31					24|23		20|19		16|15		12|11		8|7					0|
@@ -13,11 +13,11 @@
 ; S -- Descriptor type (0 = system; 1 = code or data).
 ; A -- Available for use by system software.
 ; DPL -- Descriptor privilege level.
-; DB -- Defaulr operation size (0 = 16-bit segment; 1 = 32-bit segment).
+; DB -- Default operation size (0 = 16-bit segment; 1 = 32-bit segment).
 ; Type -- Segment type.
 ; For code:
 ;   + Code: 1 for code, since this is a code segment.
-;   + Conforming: 0, by not corming it means code in a segment with a lower privilege may not call code in this segment,
+;   + Conforming: 0, by not conforming it means code in a segment with a lower privilege may not call code in this segment,
 ;                 this a key to memory protection.  
 ;   + Readable: 1, 1 if readable, 0 if execute-only. Readable allows us to read constants defined in the code.
 ;   + Accessed: 0 This is often used for debugging and virtual memory techniques,

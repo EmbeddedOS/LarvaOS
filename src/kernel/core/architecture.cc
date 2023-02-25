@@ -8,12 +8,19 @@ extern "C"
 #include <disk/disk.h>
 #include <fs/path_parser.h>
 #include <fs/file.h>
+#include <string.h>
 }
 
 using namespace lava;
 
-arch::arch() : kernel_chunk{nullptr}
+arch::arch() : m_kernel_chunk{nullptr},
+               m_structured_gdt_runtime{
+                   {.base = 0x00, .limit = 0x00, .type = 0x00},       // NULL segment.
+                   {.base = 0x00, .limit = 0xFFFFFFFF, .type = 0x9A}, // Kernel code segment.
+                   {.base = 0x00, .limit = 0xFFFFFFFF, .type = 0x92}} // Kernel data segment.
 {
+    memset(m_gdt_runtime, 0, sizeof(m_gdt_runtime));
+    extract_structured_gdt(m_gdt_runtime, m_structured_gdt_runtime, TOTAL_GDT_SEGMENTS);
 }
 
 void arch::init()
@@ -33,8 +40,8 @@ void arch::init()
     init_interrupt_descriptor_table();
 
     /* 5. make 4GB virtual memory address space for the kernel. */
-    kernel_chunk = make_new_4GB_virtual_memory_address_space(PAGING_IS_WRITEABLE | PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
-    switch_to_paging_mode(kernel_chunk->directory_entry);
+    m_kernel_chunk = make_new_4GB_virtual_memory_address_space(PAGING_IS_WRITEABLE | PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
+    switch_to_paging_mode(m_kernel_chunk->directory_entry);
     enable_paging();
 
     int fd = fopen("/data.txt", "r");
