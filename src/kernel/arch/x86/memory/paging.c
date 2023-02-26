@@ -20,10 +20,10 @@ struct paging_4GB_chunk *make_new_4GB_virtual_memory_address_space(uint8_t flags
     /* 2. Creating Page Tables, each entry in the Page Directory is a pointer to a Page Table.*/
     int offset = 0;
     for (int i = 0; i < PAGING_TOTAL_ENTRIES_PER_TABLE; i++)
-    { // this For loop make 1024 page tables, 
+    { // this For loop make 1024 page tables,
       // initialise them with the flags,
       // and causes the Page Directory Entries point to them.
-        
+
         uint32_t *entry = kzalloc(sizeof(uint32_t) * PAGING_TOTAL_ENTRIES_PER_TABLE);
         for (int j = 0; j < PAGING_TOTAL_ENTRIES_PER_TABLE; j++)
         { // We will fill all 1024 entries in the table, mapping 4 megabytes.
@@ -90,4 +90,103 @@ int paging_set_virtual_address(uint32_t *directory, void *virtual_address, uint3
 
 out:
     return result;
+}
+
+void release_4GB_virtual_memory_address_space(struct paging_4GB_chunk *page)
+{
+    for (int i = 0; i < 1024; i++)
+    {
+        uint32_t entry = page->directory_entry[i];
+        uint32_t *table = (uint32_t *)(entry & 0xFFFFF000);
+        kfree(table);
+    }
+    kfree(page->directory_entry);
+    kfree(page);
+}
+static int paging_map_page(uint32_t *directory,
+                           void *virt,
+                           void *phys,
+                           int flags)
+{
+    if ((uint32_t)virt % PAGING_PAGE_SIZE || (uint32_t)phys % PAGING_PAGE_SIZE)
+    {
+        return -EINVAL;
+    }
+
+    return paging_set_virtual_address(directory, virt, (uint32_t)phys | flags);
+}
+
+static int paging_map_memory_by_range(uint32_t *directory,
+                                      void *virt,
+                                      void *phys,
+                                      uint32_t total_pages,
+                                      int flags)
+{
+    int res = 0;
+    for (int i = 0; i < total_pages; i++)
+    {
+        res = paging_map_page(directory, virt, phys, flags);
+        if (res == 0)
+        {
+            break;
+        }
+
+        virt += PAGING_PAGE_SIZE;
+        phys += PAGING_PAGE_SIZE;
+    }
+out:
+    return res;
+}
+
+int paging_map_virtual_memory(uint32_t *directory,
+                              void *virt,
+                              void *phys,
+                              void *phys_end,
+                              int flags)
+{
+    int res = 0;
+
+    // Check memory is aligned or not.
+    if ((uint32_t)virt % PAGING_PAGE_SIZE)
+    {
+        res = -EINVAL;
+        goto out;
+    }
+
+    if ((uint32_t)phys % PAGING_PAGE_SIZE)
+    {
+        res = -EINVAL;
+        goto out;
+    }
+
+    if ((uint32_t)phys_end % PAGING_PAGE_SIZE)
+    {
+        res = -EINVAL;
+        goto out;
+    }
+
+    // Check valid of physical memory.
+    if ((uint32_t)phys_end < (uint32_t)phys)
+    {
+        res = -EINVAL;
+        goto out;
+    }
+
+    uint32_t total_bytes = (uint32_t)phys_end - (uint32_t)phys;
+    int total_pages = total_bytes / PAGING_PAGE_SIZE;
+
+    res = paging_map_memory_by_range(directory, virt, phys, total_pages, flags);
+out:
+    return res;
+}
+
+void *paging_align_address(void *ptr)
+{
+    int unaligned_addresses_size = (uint32_t)ptr % PAGING_PAGE_SIZE;
+    if (unaligned_addresses_size > 0)
+    {
+        return (void *)((uint32_t)ptr + PAGING_PAGE_SIZE - unaligned_addresses_size);
+    }
+
+    return ptr;
 }

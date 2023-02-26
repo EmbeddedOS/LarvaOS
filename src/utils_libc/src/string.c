@@ -106,3 +106,31 @@ int strncmp(const char *s1, const char *s2, int c)
 
     return result;
 }
+
+char *strncpy(char *d, const char *s, size_t n)
+{
+    unsigned count;
+
+    if ((d == (char *)NULL) || (s == (char *)NULL))
+    {
+        return (d = NULL);
+    }
+
+    if (n > 255)
+        n = 255;
+
+    for (count = 0; (int)count < (int)n; count++)
+    {
+        d[count] = s[count];
+
+        if (s[count] == '\0')
+            break;
+    }
+
+    if (count >= 255)
+    {
+        return (d = NULL);
+    }
+
+    return (d);
+}
