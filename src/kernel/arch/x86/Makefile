@@ -25,7 +25,8 @@ OBJS:=arch/$(ARCH)/start.o \
 	arch/$(ARCH)/fs/path_parser.o \
 	arch/$(ARCH)/fs/file.o \
 	arch/$(ARCH)/fs/fat16.o \
-	arch/$(ARCH)/task/task.o
+	arch/$(ARCH)/task/task.o \
+	arch/$(ARCH)/task/tss_load.o
 
 
 LINKER_SCRIPT:=./arch/$(ARCH)/linker.ld
