@@ -53,7 +53,7 @@ check_destructor_list:
 
    jmp $
 
-%include "./utils/print_string_pm.asm"
+%include "./asm-utils/print_string_pm.asm"
 %include "./boot/enable_A20_line.asm"
 %include "./boot/remap_master_PIC.asm"
 

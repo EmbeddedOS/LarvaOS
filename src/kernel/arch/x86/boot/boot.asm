@@ -103,11 +103,11 @@ start:
 
 
 ; This will simply get replaced bythe contents of the file.
-%include "./gdt.asm" 
-%include "./utils/print_string_pm.asm"
-%include "./utils/print_string_rm.asm"
-%include "./enable_A20_line.asm"
-%include "./ATA_read_sector.asm"
+%include "./boot/gdt.asm" 
+%include "./asm-utils/print_string_pm.asm"
+%include "./asm-utils/print_string_rm.asm"
+%include "./boot/enable_A20_line.asm"
+%include "./boot/ATA_read_sector.asm"
 
 [BITS 32]           ; We need to use the [bits 32] directive to tell our the assembler that,
                     ; from that point onwards, it should encode in 32-bit mode instructions.

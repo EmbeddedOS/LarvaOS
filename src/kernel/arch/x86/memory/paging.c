@@ -1,5 +1,5 @@
-#include "paging.h"
-#include "kheap.h"
+#include <memory/paging.h>
+#include <memory/kheap.h>
 #include <stdbool.h>
 #include <errno.h>
 

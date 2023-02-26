@@ -4,7 +4,7 @@
 extern "C"
 {
 #include <interrupt.h>
-#include <mm/kheap.h>
+#include <memory/kheap.h>
 #include <disk/disk.h>
 #include <fs/path_parser.h>
 #include <fs/file.h>

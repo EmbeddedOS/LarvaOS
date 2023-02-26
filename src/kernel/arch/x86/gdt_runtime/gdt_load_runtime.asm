@@ -6,7 +6,7 @@ gdt_load_runtime:
     mov [gdt_descriptor + 2], eax
     mov ax, [esp + 8]               ; Size of segment descriptor.
     mov [gdt_descriptor], ax
-    lgbt [gdt_descriptor]           ; Load GDT descriptor.
+    lgdt [gdt_descriptor]           ; Load GDT descriptor.
     ret
 
 section .data

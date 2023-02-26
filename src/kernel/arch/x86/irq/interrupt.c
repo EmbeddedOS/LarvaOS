@@ -1,4 +1,4 @@
-#include "interrupt.h"
+#include <interrupt.h>
 #include <string.h>
 #include <video.h>
 #include <io.h>

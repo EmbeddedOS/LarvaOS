@@ -1,4 +1,4 @@
-#include "panic.h"
+#include <panic.h>
 #include <video.h>
 
 /*

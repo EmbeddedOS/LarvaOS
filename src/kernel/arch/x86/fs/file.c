@@ -1,10 +1,10 @@
-#include "file.h"
-#include "fat16.h"
-#include "path_parser.h"
+#include <fs/file.h>
+#include <fs/fat16.h>
+#include <fs/path_parser.h>
 #include <types.h>
 #include <string.h>
 #include <stdbool.h>
-#include <mm/kheap.h>
+#include <memory/kheap.h>
 #include <disk/disk.h>
 #include <errno.h>
 #include <video.h>

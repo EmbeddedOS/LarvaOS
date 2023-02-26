@@ -1,10 +1,10 @@
-#include "path_parser.h"
+#include <fs/path_parser.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
 #include <stdbool.h>
 #include <errno.h>
-#include <mm/kheap.h>
+#include <memory/kheap.h>
 
 static bool path_format_is_valid(const char *filename)
 {

@@ -1,4 +1,4 @@
-#include <mm/kheap.h>
+#include <memory/kheap.h>
 #include <stdbool.h>
 #include "stream.h"
 #include <video.h>

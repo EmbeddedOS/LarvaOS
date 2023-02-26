@@ -1,5 +1,5 @@
-#include "heap.h"
-#include "kheap.h"
+#include <memory/heap.h>
+#include <memory/kheap.h>
 #include <video.h>
 #include <string.h>
 

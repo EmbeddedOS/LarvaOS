@@ -1,7 +1,7 @@
 #pragma once
 extern "C"
 {
-#include <mm/paging.h>
+#include <memory/paging.h>
 #include <gdt.h>
 }
 
