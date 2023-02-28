@@ -19,7 +19,7 @@ extern void enable_paging();
 
 struct paging_4GB_chunk *make_new_4GB_virtual_memory_address_space(uint8_t flags);
 
-void switch_to_paging_mode(uint32_t *directory);
+void switch_to_page(struct paging_4GB_chunk *directory);
 
 int paging_get_indexes(void *virtual_address, uint32_t *directory_index_out, uint32_t *table_index_out);
 

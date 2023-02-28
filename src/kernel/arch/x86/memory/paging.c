@@ -45,10 +45,10 @@ struct paging_4GB_chunk *make_new_4GB_virtual_memory_address_space(uint8_t flags
     return chunk_4GB;
 }
 
-void switch_to_paging_mode(uint32_t *directory)
+void switch_to_page(struct paging_4GB_chunk *directory)
 {
-    paging_load_directory(directory);
-    current_directory = directory;
+    paging_load_directory(directory->directory_entry);
+    current_directory = directory->directory_entry;
 }
 
 int paging_get_indexes(void *virtual_address, uint32_t *directory_index_out, uint32_t *table_index_out)

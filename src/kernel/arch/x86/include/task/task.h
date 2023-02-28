@@ -43,3 +43,7 @@ void release_task(struct task *task);
 
 struct task *get_current_task();
 struct task *get_next_task();
+
+extern void task_return(struct registers *regs);
+extern void restore_general_purpose_registers(struct registers *regs);
+extern void use_user_data_segment_registers();

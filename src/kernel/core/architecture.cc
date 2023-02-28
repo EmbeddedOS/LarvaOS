@@ -53,7 +53,7 @@ void arch::init()
 
     /* 5. make 4GB virtual memory address space for the kernel. */
     m_kernel_chunk = make_new_4GB_virtual_memory_address_space(PAGING_IS_WRITEABLE | PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
-    switch_to_paging_mode(m_kernel_chunk->directory_entry);
+    switch_to_page(m_kernel_chunk);
     enable_paging();
 
     int fd = fopen("/data.txt", "r");

@@ -4,6 +4,7 @@
 #include <errno.h>
 #include <memory/kheap.h>
 #include <task/process.h>
+#include <panic.h>
 
 struct task *current_task = NULL;
 
@@ -122,4 +123,38 @@ out:
     }
 
     return task;
+}
+
+int task_switch(struct task *task)
+{
+    int res = 0;
+    current_task = task;
+    // Change the page directories of the process to point to the new task.
+    switch_to_page(task->page_directory);
+
+out:
+    return res;
+}
+
+int task_page()
+{   // Takes us out of the kernel page,
+    // page directory and loads us into the task page directory.
+    int res = 0;
+
+    use_user_data_segment_registers();
+    task_switch(current_task);
+
+out:
+    return res;
+}
+
+void run_first_task()
+{
+    if (current_task == NULL)
+    {
+        panic("No current task exist!");
+    }
+
+    task_switch(head_task);
+    task_return(&head_task->registers);
 }
