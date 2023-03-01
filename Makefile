@@ -13,7 +13,9 @@ help:
 all:
 	make -C ./src/utils_libc/ all
 	make -C ./src/kernel all
+	make -C ./src/userland all
 
 clean:
 	make -C ./src/utils_libc/ clean
 	make -C ./src/kernel clean
+	make -C ./src/userland clean
