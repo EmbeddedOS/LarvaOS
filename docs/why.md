@@ -134,3 +134,39 @@ load_interrupt_descriptor_table:
     pop ebp            ; Pop current base pointer.
     ret
 ```
+
+## Why can't we make a file with name greater than 8 characters that will be mounted to our disk?
+
+We are using FAT 16 as filesystem which support maximum filename is 8 characters and extension is 3 characters:
+
+```C
+struct fat_directory_item
+{
+    uint8_t filename[8];
+    uint8_t ext[3];
+    uint8_t attribute;
+    uint8_t reserved;
+    uint8_t creation_time_tenths_of_a_sec;
+    uint16_t creation_time;
+    uint16_t creation_date;
+    uint16_t last_access;
+    uint16_t high_16_bits_first_cluster;
+    uint16_t last_mod_time;
+    uint16_t last_mod_date;
+    uint16_t low_16_bits_first_cluster;
+    uint32_t filesize;
+} __attribute__((packed));
+
+```
+
+For detailed, visit [link](https://www.keil.com/pack/doc/mw/FileSystem/html/fat_fs.html)
+**Long and Short File Name handling**
+File System Component is provided with the library with long (LFN) and short (SFN or 8.3) filename support. Since there is no compulsory algorithm for creating the 8.3 name from an LFN, File System Component uses convention described below.
+
+Upper-cased or lowercased name which is 8.3 valid, is stored upper-cased in a single SFN entry
+Example: "TEXTFILE.TXT" is stored as "TEXTFILE.TXT" (SFN)
+Example: "textfile.txt" is stored as "TEXTFILE.TXT" (SFN)
+Mixed-case name which is 8.3 valid, is stored mixed-case in LFN entry and SFN entry is created, which is concluded with tilde and a numeric value.
+Example: "TextFile.txt" is stored as "TextFile.txt" (LFN) and "TEXTFI~1.TXT" (SFN)
+Name which is not 8.3 valid is stored in LFN entry and SFN entry. Name written in SFN entry is upper-cased, stripped of invalid 8.3 characters which are replaced with underscore "_" and concluded with tilde and a numeric value.
+Example: "Tex+File.txt" is stored as "Tex+File.txt" (LFN) and "TEX_FI~1.TXT (SFN)"
