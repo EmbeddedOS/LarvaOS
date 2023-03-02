@@ -6,6 +6,7 @@
 #include <strings.h>
 #include <errno.h>
 #include <fs/file.h>
+#include <video.h>
 
 struct process *current_process = NULL;
 
@@ -56,7 +57,7 @@ static int process_load_binary(const char *filename,
         goto out;
     }
 
-    if (fread(fd, program_data_ptr, stat.filesize, 1))
+    if (fread(fd, program_data_ptr, stat.filesize, 1) < 0)
     {
         res = -EIO;
         goto out;
@@ -193,6 +194,7 @@ int load_process(const char *filename, struct process **process)
         res = slot;
         goto out;
     }
+
 
     res = process_load_for_slot(filename, process, slot);
 

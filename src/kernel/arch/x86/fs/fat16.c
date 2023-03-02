@@ -503,14 +503,11 @@ static struct fat_item *fat16_find_item_in_directory(struct disk *disk, struct f
 {
     struct fat_item *item = NULL;
     char tmp_filename[FILESYSTEM_MAX_PATH_LENGTH];
-
     for (int i = 0; i < directory->total; i++)
     {
         // Remove space, etc.
         // file name origin format: DATA    TXT
         fat16_get_full_relative_filename(&directory->item[i], tmp_filename, sizeof(tmp_filename));
-        print(tmp_filename);
-        print("\n");
         if (strcasecmp(tmp_filename, name) == 0)
         { // After remove space, the filename that get from the disk
             // has the upcase format, for example: DATA.TXT

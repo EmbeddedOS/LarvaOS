@@ -58,28 +58,28 @@ void arch::init()
     enable_paging();
 
     // Test virtual file system.
-    int fd = fopen("/data.txt", "r");
-    char buf[20];
-    fseek(fd, 3, SEEK_SET);
-    fread(fd, buf, 20, 1);
-    lava::cout << "content of the file: " << buf << lava::endl;
+    // int fd = fopen("/data.txt", "r");
+    // char buf[20];
+    // fseek(fd, 3, SEEK_SET);
+    // fread(fd, buf, 20, 1);
+    // lava::cout << "content of the file: " << buf << lava::endl;
 
-    file_stat stat;
+    // file_stat stat;
 
-    fstat(fd, &stat);
-    lava::cout << "stat file: " << stat.filename
-               << ", extension: " << stat.ext
-               << ", filesize: " << stat.filesize
-               << lava::endl;
-    fclose(fd);
-    lava::cout << "Close the file\n";
+    // fstat(fd, &stat);
+    // lava::cout << "stat file: " << stat.filename
+    //            << ", extension: " << stat.ext
+    //            << ", filesize: " << stat.filesize
+    //            << lava::endl;
+    // fclose(fd);
+    // lava::cout << "Close the file\n";
 
     // Test process.
     struct process *proc = NULL;
-    int res = load_process("/helloworld.bin", &proc);
+    int res = load_process("/loop.bin", &proc);
     if (res < 0)
     {
-        lava::cout << "Failed to load helloworld.bin\n";
+        lava::cout << "Failed to load loop.bin\n";
     }
 }
 
