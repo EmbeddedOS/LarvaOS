@@ -141,7 +141,7 @@ static void fat16_init_private_data(struct disk *disk, struct fat_private_data *
     private->cluster_read_stream = create_disk_stream(disk->id);
     private->fat_read_stream = create_disk_stream(disk->id);
     private->directory_stream = create_disk_stream(disk->id);
-    print("FAT16 filesystem is initializing private dat with the disk. \n");
+    print("FAT16 filesystem is initializing private data with the disk.\n");
 }
 
 static int fat16_get_total_items_for_directory(struct disk *disk, int directory_start_sector)
@@ -509,7 +509,8 @@ static struct fat_item *fat16_find_item_in_directory(struct disk *disk, struct f
         // Remove space, etc.
         // file name origin format: DATA    TXT
         fat16_get_full_relative_filename(&directory->item[i], tmp_filename, sizeof(tmp_filename));
-
+        print(tmp_filename);
+        print("\n");
         if (strcasecmp(tmp_filename, name) == 0)
         { // After remove space, the filename that get from the disk
             // has the upcase format, for example: DATA.TXT

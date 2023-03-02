@@ -16,5 +16,6 @@ make all
 
 sudo mount -t vfat ./bin/LavaOS.img /mnt/d/
 cp ./data.txt /mnt/d/
+cp ./bin/userland/helloworld.bin /mnt/d/
 sudo umount /mnt/d/
 qemu-system-i386 -hda ./bin/LavaOS.img

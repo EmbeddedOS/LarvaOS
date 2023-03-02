@@ -10,7 +10,7 @@ task_return:
     mov ebp, esp
 
     ; 1. Push the data segment: uint32_t ss;
-    mov esi, [ebx + 4]
+    mov ebx, [ebp + 4]
     push dword [ebx + 44] ; Push the data/stack selector.
 
     ; 2. Push the stack address: uint32_t esp;
@@ -36,7 +36,7 @@ task_return:
     mov gs, ax
 
     ; 7. Restore general purpose registers.
-    push dword [ebx + 4]
+    push dword [ebp + 4]
     call restore_general_purpose_registers
     
     add esp, 4  ; Restore the stack, we are unable to pop from the stack because 
@@ -61,7 +61,7 @@ restore_general_purpose_registers:
     mov eax, [ebx + 24]     ; Restore uint32_t ecx;
     mov ebx, [ebx + 12]     ; Restore uint32_t eax;
 
-    pop esp
+    add esp, 4
     ret
 
 ; C prototype: void use_user_data_segment_registers()

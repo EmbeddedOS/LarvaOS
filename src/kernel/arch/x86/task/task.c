@@ -82,7 +82,9 @@ static int task_init(struct task *task, struct process *proc)
 
     task->registers.ip = PROGRAM_VIRTUAL_ADDRESS;
     task->registers.ss = USER_DATA_SEGMENT;
+    task->registers.cs = USER_CODE_SEGMENT;
     task->registers.esp = PROGRAM_VIRTUAL_STACK_ADDRESS_START;
+    
     task->proc = proc;
 out:
     return res;
@@ -108,6 +110,7 @@ struct task *make_new_task(struct process *proc)
     { // If the task linked list is not initializing.
         head_task = task;
         tail_task = task;
+        current_task = task;
         goto out;
     }
 
@@ -137,7 +140,7 @@ out:
 }
 
 int task_page()
-{   // Takes us out of the kernel page,
+{ // Takes us out of the kernel page,
     // page directory and loads us into the task page directory.
     int res = 0;
 

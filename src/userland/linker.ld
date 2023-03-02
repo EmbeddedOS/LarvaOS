@@ -1,5 +1,5 @@
-ENTRY(kernel_entry_point)   /* Entry point of an application, 
-                               that being specifically the first executable instruction in the output file.*/
+ENTRY(start)   /* Entry point of an application, 
+                that being specifically the first executable instruction in the output file.*/
 
 OUTPUT_FORMAT(binary)   /* Output format of the executable.*/
 

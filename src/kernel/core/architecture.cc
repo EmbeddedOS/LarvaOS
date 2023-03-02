@@ -9,6 +9,7 @@ extern "C"
 #include <fs/path_parser.h>
 #include <fs/file.h>
 #include <string.h>
+#include <task/process.h>
 }
 
 using namespace lava;
@@ -56,6 +57,7 @@ void arch::init()
     switch_to_page(m_kernel_chunk);
     enable_paging();
 
+    // Test virtual file system.
     int fd = fopen("/data.txt", "r");
     char buf[20];
     fseek(fd, 3, SEEK_SET);
@@ -72,7 +74,13 @@ void arch::init()
     fclose(fd);
     lava::cout << "Close the file\n";
 
-    enable_interrupt();
+    // Test process.
+    struct process *proc = NULL;
+    int res = load_process("/helloworld.bin", &proc);
+    if (res < 0)
+    {
+        lava::cout << "Failed to load helloworld.bin\n";
+    }
 }
 
 void arch::enable_interrupt()
