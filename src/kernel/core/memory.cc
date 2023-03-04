@@ -31,5 +31,5 @@ extern "C"
 
 [[gnu::visibility("default")]] void operator delete[](void *ptr, size_t size)
 {
-    ::operator delete(ptr);  
+    ::operator delete(ptr);
 }

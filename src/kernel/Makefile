@@ -12,8 +12,11 @@ OBJS+= ./core/kernel.o \
 	   ./core/architecture.o \
 	   ./core/panic.o \
    	   ./core/file.o \
-	   ./core/memory.o
+	   ./core/memory.o \
+	   ./core/string.o \
+	   ./core/exception.o
 
+FLAGS+= -fno-exceptions
 
 INCLUDES+= -I.arch/$(ARCH)/include -I./include -I./libc/include
 LIBS:=$(wildcard $(KLIB)*.a)
