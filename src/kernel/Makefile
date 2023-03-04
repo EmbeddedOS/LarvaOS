@@ -8,11 +8,14 @@ KLIB=../../bin/kernel_lib/
 
 # Adding architecture-independent code.
 OBJS+= ./core/kernel.o \
-	   ./klibcpp/iostream.o \
+	   ./core/iostream.o \
 	   ./core/architecture.o \
-	   ./core/panic.o
+	   ./core/panic.o \
+   	   ./core/file.o \
+	   ./core/memory.o
 
-INCLUDES+= -I.arch/$(ARCH)/ -I./ -I./core/ -I./klibcpp
+
+INCLUDES+= -I.arch/$(ARCH)/include -I./include -I./libc/include
 LIBS:=$(wildcard $(KLIB)*.a)
 
 all: os-image

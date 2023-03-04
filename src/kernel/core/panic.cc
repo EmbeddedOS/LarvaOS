@@ -1,4 +1,4 @@
-#include "panic.hh"
+#include <panic.hh>
 #include <iostream.hh>
 
 using namespace lava;

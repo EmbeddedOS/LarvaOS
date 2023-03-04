@@ -1,5 +1,6 @@
-#include "architecture.hh"
-#include "iostream.hh"
+#include <architecture.hh>
+#include <iostream.hh>
+#include <memory.hh>
 
 extern "C"
 {

@@ -32,7 +32,7 @@ OBJS:=arch/$(ARCH)/start.o \
 
 
 LINKER_SCRIPT:=./arch/$(ARCH)/linker.ld
-INCLUDES:=-I./arch/$(ARCH)/include/ -I./arch/$(ARCH)/ -I../utils_libc/include/
+INCLUDES:=-I./arch/$(ARCH)/include/ -I./arch/$(ARCH)/ -I./arch/libc/include
 
 $(FIRST_SECTOR): arch/$(ARCH)/boot/boot.asm
 	$(ASM) $(ASM_BIN_FLAG) $(INCLUDES) $< -o  $@
