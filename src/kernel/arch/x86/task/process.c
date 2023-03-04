@@ -81,7 +81,7 @@ out:
 static int process_map_binary(struct process *process)
 {
     int res = 0;
-    res = paging_map_virtual_memory(process->task->page_directory->directory_entry, (void *)PROGRAM_VIRTUAL_ADDRESS,
+    res = paging_map_virtual_memory(process->task->page_directory, (void *)PROGRAM_VIRTUAL_ADDRESS,
                                     process->physical_pointer,
                                     paging_align_address(process->physical_pointer + process->size),
                                     PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL | PAGING_IS_WRITEABLE);

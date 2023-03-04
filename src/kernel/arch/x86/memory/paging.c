@@ -51,7 +51,7 @@ void switch_to_page(struct paging_4GB_chunk *directory)
     current_directory = directory->directory_entry;
 }
 
-int paging_get_indexes(void *virtual_address, uint32_t *directory_index_out, uint32_t *table_index_out)
+static int paging_get_indexes(void *virtual_address, uint32_t *directory_index_out, uint32_t *table_index_out)
 {
     int result = 0;
     if (!paging_check_address_is_aligned(virtual_address))
@@ -67,7 +67,7 @@ out:
     return result;
 }
 
-int paging_set_virtual_address(uint32_t *directory, void *virtual_address, uint32_t val)
+static int paging_set_virtual_address(struct paging_4GB_chunk *page, void *virtual_address, uint32_t val)
 {
     int result = 0;
     if (!paging_check_address_is_aligned(virtual_address))
@@ -84,7 +84,7 @@ int paging_set_virtual_address(uint32_t *directory, void *virtual_address, uint3
         return res;
     }
 
-    uint32_t entry = directory[directory_index];
+    uint32_t entry = page->directory_entry[directory_index];
     uint32_t *table = (uint32_t *)(entry & 0xfffff000);
     table[table_index] = val;
 
@@ -103,7 +103,7 @@ void release_4GB_virtual_memory_address_space(struct paging_4GB_chunk *page)
     kfree(page->directory_entry);
     kfree(page);
 }
-static int paging_map_page(uint32_t *directory,
+static int paging_map_page(struct paging_4GB_chunk *page,
                            void *virt,
                            void *phys,
                            int flags)
@@ -113,10 +113,10 @@ static int paging_map_page(uint32_t *directory,
         return -EINVAL;
     }
 
-    return paging_set_virtual_address(directory, virt, (uint32_t)phys | flags);
+    return paging_set_virtual_address(page, virt, (uint32_t)phys | flags);
 }
 
-static int paging_map_memory_by_range(uint32_t *directory,
+static int paging_map_memory_by_range(struct paging_4GB_chunk *page,
                                       void *virt,
                                       void *phys,
                                       uint32_t total_pages,
@@ -125,7 +125,7 @@ static int paging_map_memory_by_range(uint32_t *directory,
     int res = 0;
     for (int i = 0; i < total_pages; i++)
     {
-        res = paging_map_page(directory, virt, phys, flags);
+        res = paging_map_page(page, virt, phys, flags);
         if (res == 0)
         {
             break;
@@ -138,7 +138,7 @@ out:
     return res;
 }
 
-int paging_map_virtual_memory(uint32_t *directory,
+int paging_map_virtual_memory(struct paging_4GB_chunk *page,
                               void *virt,
                               void *phys,
                               void *phys_end,
@@ -175,7 +175,7 @@ int paging_map_virtual_memory(uint32_t *directory,
     uint32_t total_bytes = (uint32_t)phys_end - (uint32_t)phys;
     int total_pages = total_bytes / PAGING_PAGE_SIZE;
 
-    res = paging_map_memory_by_range(directory, virt, phys, total_pages, flags);
+    res = paging_map_memory_by_range(page, virt, phys, total_pages, flags);
 out:
     return res;
 }

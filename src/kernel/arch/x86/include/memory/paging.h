@@ -21,16 +21,12 @@ struct paging_4GB_chunk *make_new_4GB_virtual_memory_address_space(uint8_t flags
 
 void switch_to_page(struct paging_4GB_chunk *directory);
 
-int paging_get_indexes(void *virtual_address, uint32_t *directory_index_out, uint32_t *table_index_out);
-
-int paging_set_virtual_address(uint32_t *directory, void *virtual_address, uint32_t val);
-
 void release_4GB_virtual_memory_address_space(struct paging_4GB_chunk *page);
 
-int paging_map_virtual_memory(uint32_t *directory,
+int paging_map_virtual_memory(struct paging_4GB_chunk *page,
                               void *virt,
                               void *phys,
                               void *phys_end,
                               int flags);
 
-void* paging_align_address(void* ptr);
+void *paging_align_address(void *ptr);
