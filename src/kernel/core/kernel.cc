@@ -7,8 +7,7 @@ extern "C"
     void kernel_main()
     {
         lava::cout << lava::ostream::color::green << "Welcome to Larva OS." << lava::endl;
-        lava::arch ar;
-        ar.init();
+        lava::arch::get_instance().initialize();
         while (1)
         {
         }

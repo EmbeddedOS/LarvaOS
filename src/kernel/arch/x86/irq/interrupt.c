@@ -89,12 +89,12 @@ void init_interrupt_descriptor_table()
     load_interrupt_descriptor_table((void *)&idt_register);
 }
 
-void enable()
+void enable_interrupt()
 {
     enable_interrupts();
 }
 
-void disable()
+void disable_interrupt()
 {
     disable_interrupts();
 }

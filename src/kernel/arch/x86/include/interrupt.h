@@ -38,5 +38,5 @@ struct idtr_desc
  **/
 void init_interrupt_descriptor_table();
 
-void enable();
-void disable();
+void enable_interrupt();
+void disable_interrupt();

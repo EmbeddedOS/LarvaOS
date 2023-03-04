@@ -170,3 +170,91 @@ Mixed-case name which is 8.3 valid, is stored mixed-case in LFN entry and SFN en
 Example: "TextFile.txt" is stored as "TextFile.txt" (LFN) and "TEXTFI~1.TXT" (SFN)
 Name which is not 8.3 valid is stored in LFN entry and SFN entry. Name written in SFN entry is upper-cased, stripped of invalid 8.3 characters which are replaced with underscore "_" and concluded with tilde and a numeric value.
 Example: "Tex+File.txt" is stored as "Tex+File.txt" (LFN) and "TEX_FI~1.TXT (SFN)"
+
+## Add symbols and flags to build Origin CPP program
+
+- Because we don't use the C++ standard library built-in, so we need to add something to able to build CPP program. Add symbols:
+
+```Cpp
+
+
+extern "C"
+{
+
+    int __cxa_atexit(void (*Destructor)(void *), void *Parameter, void *HomeDSO);
+    void __cxa_finalize(void *);
+    void __cxa_pure_virtual();
+    void __stack_chk_guard_setup();
+    void __attribute__((noreturn)) __stack_chk_fail();
+    void _Unwind_Resume();
+}
+
+void *__dso_handle;
+void *__stack_chk_guard(0);
+
+namespace __cxxabiv1
+{
+    __extension__ typedef int __guard __attribute__((mode(__DI__)));
+
+    extern "C"
+    {
+        int __cxa_guard_acquire(__guard *Guard) { return !*(char *)(Guard); }
+        void __cxa_guard_release(__guard *Guard) { *(char *)Guard = 1; }
+        void __cxa_guard_abort(__guard *) {}
+    }
+}
+
+int __cxa_atexit(void (*)(void *), void *, void *)
+{
+    return 0;
+}
+
+void _Unwind_Resume()
+{
+}
+
+void __cxa_finalize(void *)
+{
+}
+
+void __cxa_pure_virtual()
+{
+}
+
+void __stack_chk_guard_setup()
+{
+    unsigned char *Guard;
+    Guard = (unsigned char *)&__stack_chk_guard;
+    Guard[sizeof(__stack_chk_guard) - 1] = 255;
+    Guard[sizeof(__stack_chk_guard) - 2] = '\n';
+    Guard[0] = 0;
+}
+
+void __attribute__((noreturn)) __stack_chk_fail()
+{
+    for (;;)
+        ;
+}
+
+void *__gxx_personality_v0 = (void *)0x00;
+```
+
+- Error `undefined reference to '_ZTVN10__cxxabiv120__si_class_type_infoE'` add flag: -fno-rtti
+
+## Global overloading of new and delete operator
+
+```Cpp
+[[gnu::visibility("default")]] void *operator new(size_t size);
+[[gnu::visibility("default")]] void operator delete(void *ptr);
+[[gnu::visibility("default")]] void *operator new[](size_t size);
+[[gnu::visibility("default")]] void operator delete[](void *ptr);
+[[gnu::visibility("default")]] void operator delete(void *ptr, size_t size);
+[[gnu::visibility("default")]] void operator delete[](void *ptr, size_t size);
+```
+
+- Some architecture using delete operator with two arguments, so we need to define two functions for this operator:
+
+```Cpp
+[[gnu::visibility("default")]] void operator delete(void *ptr);
+[[gnu::visibility("default")]] void operator delete(void *ptr, size_t size);
+```
