@@ -28,9 +28,6 @@ namespace lava
 
         void initialize() override final;
 
-        void enable_int() const;
-        void disable_int() const;
-
         arch(const arch &) = delete;
         arch(arch &&) = delete;
         void operator=(arch const &) = delete;
@@ -53,7 +50,6 @@ namespace lava
         };
 
         global_descriptor_table _gdt;
-        task_state_segment _tss;
 
         friend class global_descriptor_table;
     };
