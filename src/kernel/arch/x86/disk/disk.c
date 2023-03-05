@@ -1,4 +1,4 @@
-#include "disk.h"
+#include <disk/disk.h>
 #include <types.h>
 #include <io.h>
 #include <string.h>

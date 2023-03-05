@@ -38,7 +38,7 @@ static void extract_structured_gdt_to_gdt(uint8_t *dst,
 {
     if ((structured_gdt.limit > 0x10000) && ((structured_gdt.limit & 0xFFF) != 0xFFF))
     { // Segment Limit (20 bits), which define the size of the segment.
-        panic("Can not load GDT entry!");
+        arc_panic("Can not load GDT entry!");
     }
 
     dst[6] = 0x40;

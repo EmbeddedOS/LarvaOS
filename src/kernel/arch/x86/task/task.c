@@ -155,7 +155,7 @@ void run_first_task()
 {
     if (current_task == NULL)
     {
-        panic("No current task exist!");
+        arc_panic("No current task exist!");
     }
 
     task_switch(head_task);

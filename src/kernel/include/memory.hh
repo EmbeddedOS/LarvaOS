@@ -9,12 +9,18 @@
 [[gnu::visibility("default")]] void operator delete(void *ptr, size_t size);
 [[gnu::visibility("default")]] void operator delete[](void *ptr, size_t size);
 
-typedef struct paging_4GB_chunk* virtual_memory;
+typedef struct paging_4GB_chunk *virtual_memory;
 
 namespace lava
-{ // Virtual memory.
-    class vm : public arch_interface
+{
+    class kernel_heap
     {
+    public:
+        static void initialize_kernel_heap();
+    };
+
+    class vm : public arch_interface
+    { // Virtual memory.
     public:
         void initialize() override final;
         static vm &get_instance();

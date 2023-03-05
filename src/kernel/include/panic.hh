@@ -1,6 +1,10 @@
 #pragma once
+#include <string.hh>
 
 namespace lava
 {
-    void panic(const char *msg);
+    class kernel_panic
+    {
+        static void panic(const string& msg);
+    };
 }

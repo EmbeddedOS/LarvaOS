@@ -7,7 +7,7 @@ namespace lava
     {
 
     public:
-        explicit string();
+        string();
 
         string(const char *val);
 
@@ -17,10 +17,12 @@ namespace lava
 
         ~string();
 
+        const char *data() const;
+
         friend ostream &operator<<(ostream &os, const string &str);
         string &operator=(const char *str);
 
     private:
-        char *str;
+        char *_str;
     };
 }

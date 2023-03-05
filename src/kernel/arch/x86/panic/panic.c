@@ -7,7 +7,7 @@
  * It syncs, prints "panic: msg" and
  * then loops.
  */
-void panic(const char *msg)
+void arc_panic(const char *msg)
 {
     print("PANIC: ");
     print(msg);

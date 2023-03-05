@@ -9,70 +9,76 @@ extern "C"
 namespace lava
 {
     string::string()
-        : str{nullptr}
+        : _str{nullptr}
     {
-        str = new char[1];
-        str[0] = '\0';
+        _str = new char[1];
+        _str[0] = '\0';
     }
 
     string::string(const char *val)
     {
         if (val == nullptr)
         {
-            str = new char[1];
-            str[0] = '\0';
+            _str = new char[1];
+            _str[0] = '\0';
         }
         else
         {
-            str = new char[strlen(val) + 1];
-            strcpy(str, val);
-            str[strlen(val)] = '\0';
+            _str = new char[strlen(val) + 1];
+            strcpy(_str, val);
+            _str[strlen(val)] = '\0';
         }
     }
 
     string::string(string &&source)
     {
-        str = source.str;
-        source.str = nullptr;
+        _str = source._str;
+        source._str = nullptr;
     }
 
     string::string(const string &source)
     {
-        str = new char[strlen(source.str) + 1];
-        strcpy(str, source.str);
-        str[strlen(source.str)] = '\0';
+        _str = new char[strlen(source._str) + 1];
+        strcpy(_str, source._str);
+        _str[strlen(source._str)] = '\0';
     }
 
     string::~string()
     {
-        delete[] str;
+        delete[] _str;
     }
 
     ostream &operator<<(ostream &os, const string &str)
     {
-        os << str.str;
+        os << str._str;
         return os;
     }
 
     string &string::operator=(const char *val)
     {
-        if (str != nullptr)
+        if (_str != nullptr)
         {
-            delete[] str;
+            delete[] _str;
         }
 
         if (val == nullptr)
         {
-            str = new char[1];
-            str[0] = '\0';
+            _str = new char[1];
+            _str[0] = '\0';
         }
         else
         {
-            str = new char[strlen(val) + 1];
-            strcpy(str, val);
-            str[strlen(val)] = '\0';
+            _str = new char[strlen(val) + 1];
+            strcpy(_str, val);
+            _str[strlen(val)] = '\0';
         }
 
         return *this;
     }
+
+    const char *string::data() const
+    {
+        return _str;
+    }
+
 }

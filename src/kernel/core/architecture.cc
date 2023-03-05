@@ -2,16 +2,15 @@
 #include <iostream.hh>
 #include <memory.hh>
 #include <string.hh>
+#include <file.hh>
+#include <utility.hh>
+#include <interrupt.hh>
 
 extern "C"
 {
-#include <interrupt.h>
-#include <memory/kheap.h>
-#include <disk/disk.h>
-#include <fs/path_parser.h>
-#include <fs/file.h>
 #include <string.h>
 #include <task/process.h>
+#include <interrupt.h>
 }
 
 namespace lava
@@ -38,47 +37,33 @@ namespace lava
 
     void arch::initialize()
     {
-        disable_interrupt();
+        interrupt::get_instance().disable();
 
         _gdt.initialize();
 
-        /* 1. Initialize the HEAP. */
-        kheap_init();
+        // Initialize the HEAP.
+        kernel_heap::initialize_kernel_heap();
 
-        /* 2. Initialize the filesystem. */
-        fs_init();
+        // Initialize the file system.
+        vfs::get_instance().initialize();
 
-        /* 3. Initialise the disk controller, bind the filesystem to the disk. */
-        disk_init();
+        // Initialize the interrupt descriptor table.
+        interrupt::get_instance().initialize();
 
-        /* 4. Initialize the interrupt descriptor table. */
-        init_interrupt_descriptor_table();
-
-        /* 5. Setup the TSS. */
+        // Setup the TSS.
         memset(&_tss, 0x00, sizeof(_tss));
         _tss.esp0 = 0x600000;
         _tss.ss0 = KERNEL_DATA_SELECTOR;
         tss_load(0x28);
 
-        /* 5. make 4GB virtual memory address space for the kernel and switch to it. */
         vm::get_instance().initialize();
 
-        // Test virtual file system.
-        // int fd = fopen("/data.txt", "r");
-        // char buf[20];
-        // fseek(fd, 3, SEEK_SET);
-        // fread(fd, buf, 20, 1);
-        // lava::cout << "content of the file: " << buf << lava::endl;
-
-        // file_stat stat;
-
-        // fstat(fd, &stat);
-        // lava::cout << "stat file: " << stat.filename
-        //            << ", extension: " << stat.ext
-        //            << ", filesize: " << stat.filesize
-        //            << lava::endl;
-        // fclose(fd);
-        // lava::cout << "Close the file\n";
+        // Test file system.
+        file f {"/data.txt", open_file_mode::READ};
+        f.open();
+        f.seekg(3, seek_file_mode::SET);
+        lava::cout << "Content of file: " << f.read(20) << " file size " << f.size() << lava::endl;
+        f.close();
 
         // Test process.
         struct process *proc = NULL;

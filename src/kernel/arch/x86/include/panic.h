@@ -1,3 +1,3 @@
 #pragma once
 
-void panic(const char *msg);
+void arc_panic(const char *msg);
