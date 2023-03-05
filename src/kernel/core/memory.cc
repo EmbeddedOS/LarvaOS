@@ -46,6 +46,7 @@ namespace lava
     void vm::initialize()
     { // Make 4GB virtual memory address space for the kernel and switch to it.
         _kvm = make_new_4GB_virtual_memory_address_space(PAGING_IS_WRITEABLE | PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
+        paging_install_kernel_page(_kvm);
         switch_to_kvm();
         enable_paging();
     }
@@ -63,6 +64,6 @@ namespace lava
 
     void vm::switch_to_kvm()
     {
-        switch_to_page(_kvm);
+        switch_to_kernel_page();
     }
 }

@@ -15,20 +15,14 @@ struct idtr_desc idt_register;
 
 void idt_divide_by_zero()
 { /* Handle IRQ 0 interrupt number,
-   * This is not good enough, 
+   * This is not good enough,
    * interrupt handler should be returned by `iret` command.
    * FIXME: call me with interrupt wrapper.
    */
     write("Divide by Zero.", 14);
 }
 
-extern void int21h();
 extern void no_interrupt();
-
-void int21h_handler()
-{
-    outb(0x20, 0x20);
-}
 
 void no_interrupt_handler()
 {
@@ -37,27 +31,26 @@ void no_interrupt_handler()
 
 void init_pic(void)
 {
-	/* Initialization of ICW1 */
-	outb(0x20, 0x11);
-	outb(0xA0, 0x11);
+    /* Initialization of ICW1 */
+    outb(0x20, 0x11);
+    outb(0xA0, 0x11);
 
-	/* Initialization of ICW2 */
-	outb(0x21, 0x20);	/* start vector = 32 */
-	outb(0xA1, 0x70);	/* start vector = 96 */
+    /* Initialization of ICW2 */
+    outb(0x21, 0x20); /* start vector = 32 */
+    outb(0xA1, 0x70); /* start vector = 96 */
 
-	/* Initialization of ICW3 */
-	outb(0x21, 0x04);
-	outb(0xA1, 0x02);
+    /* Initialization of ICW3 */
+    outb(0x21, 0x04);
+    outb(0xA1, 0x02);
 
-	/* Initialization of ICW4 */
-	outb(0x21, 0x01);
-	outb(0xA1, 0x01);
+    /* Initialization of ICW4 */
+    outb(0x21, 0x01);
+    outb(0xA1, 0x01);
 
-	/* mask interrupts */
-	outb(0x21, 0x0);
-	outb(0xA1, 0x0);
+    /* mask interrupts */
+    outb(0x21, 0x0);
+    outb(0xA1, 0x0);
 }
-
 
 void set_interrupt_handler(int pos, void *address)
 {
@@ -84,8 +77,9 @@ void init_interrupt_descriptor_table()
         set_interrupt_handler(i, &no_interrupt);
     }
 
-    set_interrupt_handler(0, &idt_divide_by_zero);
-    set_interrupt_handler(0x21, &int21h);
+    set_interrupt_handler(DIVIDE_BY_ZERO_INTERRUPT_NUMBER, &idt_divide_by_zero);
+    set_interrupt_handler(SYSTEM_CALL_INTERRUPT_NUMBER, &syscall_wrapper);
+
     load_interrupt_descriptor_table((void *)&idt_register);
 }
 

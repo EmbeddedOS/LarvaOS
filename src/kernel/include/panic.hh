@@ -5,6 +5,7 @@ namespace lava
 {
     class kernel_panic
     {
-        static void panic(const string& msg);
+    public:
+        static void panic(const string &msg);
     };
 }

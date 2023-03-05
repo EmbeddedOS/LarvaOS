@@ -5,7 +5,9 @@
 #define KERNEL_CODE_SELECTOR 0x08
 #define KERNEL_DATA_SELECTOR 0x10
 
-typedef void(*INTERRUPT_CALLBACK_FUNCTION)();
+#define DIVIDE_BY_ZERO_INTERRUPT_NUMBER  0x00
+#define SYSTEM_CALL_INTERRUPT_NUMBER 0x80
+typedef void (*INTERRUPT_CALLBACK_FUNCTION)();
 
 /**
  * Interrupt Descriptor Table (32-bit).
@@ -33,10 +35,28 @@ struct idtr_desc
     uint32_t base;  // Base address of the start of the interrupt descriptor table.
 } __attribute__((packed));
 
-/**
- * Init IDT after kernel is loaded.
- **/
+struct interrupt_frame
+{
+    uint32_t edi;
+    uint32_t esi;
+    uint32_t ebp;
+    uint32_t reserved;
+    uint32_t ebx;
+    uint32_t edx;
+    uint32_t ecx;
+    uint32_t eax;
+
+    uint32_t ip;
+    uint32_t cs;
+    uint32_t flags;
+    uint32_t esp;
+    uint32_t ss;
+} __attribute__((packed));
+
+// Init IDT after kernel is loaded.
 void init_interrupt_descriptor_table();
 
 void enable_interrupt();
 void disable_interrupt();
+
+extern void syscall_wrapper();

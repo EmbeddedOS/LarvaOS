@@ -19,6 +19,10 @@ extern void enable_paging();
 
 struct paging_4GB_chunk *make_new_4GB_virtual_memory_address_space(uint8_t flags);
 
+void switch_to_kernel_page();
+
+void paging_install_kernel_page(struct paging_4GB_chunk *kernel_page);
+
 void switch_to_page(struct paging_4GB_chunk *directory);
 
 void release_4GB_virtual_memory_address_space(struct paging_4GB_chunk *page);

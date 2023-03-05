@@ -8,7 +8,7 @@ extern "C"
 }
 
 struct process;
-
+struct interrupt_frame;
 namespace lava
 {
     typedef struct process *arch_proc;
@@ -24,7 +24,10 @@ namespace lava
         void operator=(proc const &) = delete;
         void operator=(proc &&) = delete;
 
+        void load_user_page();
+        void load_kernel_page();
         void load_proc(const string &filename);
+        void save_current_task_state(struct interrupt_frame *frame);
         static task_state_segment *get_task_state_segment();
 
     private:

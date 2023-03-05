@@ -11,8 +11,9 @@ FIRST_SECTOR:=arch/$(ARCH)/boot/boot.bin
 OBJS:=arch/$(ARCH)/start.o \
 	arch/$(ARCH)/video/video.o \
 	arch/$(ARCH)/panic/panic.o \
-	arch/$(ARCH)/irq/interrupt.o \
-	arch/$(ARCH)/irq/idt.o \
+	arch/$(ARCH)/interrupt/interrupt.o \
+	arch/$(ARCH)/interrupt/idt.o \
+	arch/$(ARCH)/interrupt/syscall.o \
 	arch/$(ARCH)/gdt_runtime/gdt.o \
 	arch/$(ARCH)/gdt_runtime/gdt_load_runtime.o \
 	arch/$(ARCH)/io/io.o \

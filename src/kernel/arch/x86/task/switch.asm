@@ -3,7 +3,8 @@ section .asm
 
 global restore_general_purpose_registers
 global task_return
-global use_user_data_segment_registers
+global load_user_data_segment_registers
+global load_kernel_data_segment_registers
 
 ; C prototype: void task_return(struct registers* regs);
 task_return:
@@ -64,13 +65,24 @@ restore_general_purpose_registers:
     add esp, 4
     ret
 
-; C prototype: void use_user_data_segment_registers()
+; C prototype: void load_user_data_segment_registers();
 ; Change all the segment registers to the user data segment registers.
 
-use_user_data_segment_registers:
+load_user_data_segment_registers:
     mov ax, 0x23        ; #define USER_DATA_SEGMENT 0x23
     mov ds, ax
     mov es, ax
     mov fs, ax
     mov gs, ax
+    ret
+
+; C prototype: void load_kernel_data_segment_registers();
+; Change all the segment registers to the kernel data segment registers.
+
+load_kernel_data_segment_registers:
+    mov ax, 0x10        ; #define KERNEL_DATA_SELECTOR 0x10
+    mov ds, ax
+    mov es, ax
+    mov gs, ax
+    mov fs, ax
     ret

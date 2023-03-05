@@ -5,7 +5,22 @@
 
 extern void paging_load_directory(uint32_t *directory);
 
-static uint32_t *current_directory = 0;
+static struct paging_4GB_chunk *kernel_directory = NULL;
+static uint32_t *current_directory = NULL;
+
+void switch_to_kernel_page()
+{
+    switch_to_page(kernel_directory);
+}
+
+void paging_install_kernel_page(struct paging_4GB_chunk *kernel_page)
+{
+    if (kernel_directory == NULL)
+    {// We only load kernel page one time.
+        kernel_directory = kernel_page;
+    }
+}
+
 
 static bool paging_check_address_is_aligned(void *addr)
 {
@@ -190,3 +205,4 @@ void *paging_align_address(void *ptr)
 
     return ptr;
 }
+

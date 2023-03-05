@@ -5,6 +5,7 @@
 #include <memory/kheap.h>
 #include <task/process.h>
 #include <panic.h>
+#include <interrupt.h>
 
 struct task *current_task = NULL;
 
@@ -84,7 +85,7 @@ static int task_init(struct task *task, struct process *proc)
     task->registers.ss = USER_DATA_SEGMENT;
     task->registers.cs = USER_CODE_SEGMENT;
     task->registers.esp = PROGRAM_VIRTUAL_STACK_ADDRESS_START;
-    
+
     task->proc = proc;
 out:
     return res;
@@ -139,12 +140,14 @@ out:
     return res;
 }
 
-int task_page()
+int load_user_task_page()
 { // Takes us out of the kernel page,
-    // page directory and loads us into the task page directory.
+  // page directory and loads us into the task page directory.
+  // Use this function when we want to change from kernel page to task,
+  // Do not use it when switch task by task.
     int res = 0;
 
-    use_user_data_segment_registers();
+    load_user_data_segment_registers();
     task_switch(current_task);
 
 out:
@@ -160,4 +163,20 @@ void run_first_task()
 
     task_switch(head_task);
     task_return(&head_task->registers);
+}
+
+void task_save_state(struct task *task, struct interrupt_frame *frame)
+{
+    task->registers.ip = frame->ip;
+    task->registers.cs = frame->cs;
+    task->registers.flags = frame->flags;
+    task->registers.esp = frame->esp;
+    task->registers.ss = frame->ss;
+    task->registers.eax = frame->eax;
+    task->registers.ebp = frame->ebp;
+    task->registers.ebx = frame->ebx;
+    task->registers.ecx = frame->ecx;
+    task->registers.edi = frame->edi;
+    task->registers.edx = frame->edx;
+    task->registers.esi = frame->esi;
 }

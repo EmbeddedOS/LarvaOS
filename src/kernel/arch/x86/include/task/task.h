@@ -25,7 +25,7 @@ struct registers
     uint32_t esp;
     uint32_t ss;
 };
-
+struct interrupt_frame;
 struct paging_4GB_chunk;
 struct process;
 struct task
@@ -46,4 +46,9 @@ struct task *get_next_task();
 
 extern void task_return(struct registers *regs);
 extern void restore_general_purpose_registers(struct registers *regs);
-extern void use_user_data_segment_registers();
+extern void load_user_data_segment_registers();
+extern void load_kernel_data_segment_registers();
+
+int load_user_task_page();
+
+void task_save_state(struct task *task, struct interrupt_frame *frame);
