@@ -2,24 +2,52 @@
 #include <architecture.hh>
 
 struct interrupt_frame;
+
 namespace lava
 {
-    class syscall : public arch_interface
+    constexpr int MAXIMUM_NUMBER_OF_SYSCALL_ARGS{5};
+    constexpr int MAXIMUM_NUMBER_OF_SYSCALLS{100};
+
+    class sys_args
+    {
+    public:
+        sys_args() = default;
+        ~sys_args() = default;
+
+        uint32_t get_arg(uint32_t n); /* Get a syscall argument. */
+        void load_args(interrupt_frame *frame);
+
+    private:
+        void __set_param(uint32_t ret,
+                         uint32_t ret1,
+                         uint32_t ret2,
+                         uint32_t ret3,
+                         uint32_t ret4); /* Set the syscall arguments. */
+
+        uint32_t _ret_reg[MAXIMUM_NUMBER_OF_SYSCALL_ARGS];
+    };
+
+    typedef void *(*syscall_handler)(sys_args);
+
+    class syscalls : public arch_interface
     {
 
     public:
         void initialize() override final;
-        static syscall &get_instance();
+        static syscalls &get_instance();
 
-        syscall(const syscall &) = delete;
-        syscall(syscall &&) = delete;
-        void operator=(syscall const &) = delete;
-        void operator=(syscall &&) = delete;
+        syscalls(const syscalls &) = delete;
+        syscalls(syscalls &&) = delete;
+        void operator=(syscalls const &) = delete;
+        void operator=(syscalls &&) = delete;
 
-        void *handle(int command, interrupt_frame *frame);
+        void add(int num, syscall_handler h);
+        void *call(int num, sys_args args);
 
     private:
-        syscall() = default;
-        ~syscall() = default;
+        syscalls() = default;
+        ~syscalls() = default;
+
+        syscall_handler _calls[MAXIMUM_NUMBER_OF_SYSCALLS];
     };
 }

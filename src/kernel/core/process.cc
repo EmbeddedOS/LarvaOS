@@ -70,4 +70,8 @@ namespace lava
         task_save_state(task, frame);
     }
 
+    void save_the_syscall_arguments(struct interrupt_frame *frame)
+    {
+
+    }
 }

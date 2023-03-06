@@ -28,7 +28,10 @@ namespace lava
         void load_kernel_page();
         void load_proc(const string &filename);
         void save_current_task_state(struct interrupt_frame *frame);
+        void save_the_syscall_arguments(struct interrupt_frame *frame);
+
         static task_state_segment *get_task_state_segment();
+
 
     private:
         proc() = default;
