@@ -4,7 +4,7 @@
 
 namespace lava
 {
-    enum
+    enum syscall_entry
     {
         SYS_zero = 0,
         SYS_exit = 1,

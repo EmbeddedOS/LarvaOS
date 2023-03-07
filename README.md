@@ -2,7 +2,7 @@
 
 A multitasking operating system and kernel with an interactive shell.
 
-## Using bless command to see your own kernel image
+## Using bless command to see our kernel image
 
 bless - graphical hexadecimal Gtk# editor.
 Edit  the  FILEs  as a `sequence of bytes`, allowing read/write, search, pattern finding,  efficient  query-replace,  multi-tabbing,  customized data-views, plugins, and many other features. Using bless command:

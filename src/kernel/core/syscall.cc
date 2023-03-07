@@ -1,7 +1,8 @@
+#include <syscall_table.hh>
 #include <syscall.hh>
 #include <process.hh>
-
 #include <panic.hh>
+#include <api.hh>
 
 extern "C"
 {
@@ -32,6 +33,7 @@ namespace lava
     void syscalls::initialize()
     {
         // Add some syscall handler function here.
+        this->add(syscall_entry::SYS_zero, &sys_zero);
     }
 
     syscalls &syscalls::get_instance()
@@ -42,23 +44,23 @@ namespace lava
 
     void syscalls::add(int num, syscall_handler h)
     {
-        if (num <= 0 || num > MAXIMUM_NUMBER_OF_SYSCALLS)
+        if (num < 0 || num > MAXIMUM_NUMBER_OF_SYSCALLS)
         {
-           kernel_panic::panic("The syscall number is out of bounds.");
+            kernel_panic::panic("The syscall number is out of bounds.");
         }
 
         if (_calls[num] != nullptr)
         {
-           kernel_panic::panic("Handler of the syscall number is existing.");
+            kernel_panic::panic("Handler of the syscall number is existing.");
         }
 
         _calls[num] = h;
     }
 
-    void *syscalls::call(int num, sys_args args)
+    void *syscalls::call(int num, const sys_args &args)
     {
 
-        if (num <= 0 || num > MAXIMUM_NUMBER_OF_SYSCALLS)
+        if (num < 0 || num > MAXIMUM_NUMBER_OF_SYSCALLS)
         {
             return nullptr;
         }

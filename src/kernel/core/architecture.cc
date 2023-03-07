@@ -6,6 +6,7 @@
 #include <utility.hh>
 #include <interrupt.hh>
 #include <process.hh>
+#include <syscall.hh>
 
 extern "C"
 {
@@ -58,6 +59,9 @@ namespace lava
 
         // Initialize virtual memory and switch to kernel virtual memory.
         vm::get_instance().initialize();
+
+        // Initialize system calls.
+        lava::syscalls::get_instance().initialize();
 
         // Test process.
         proc::get_instance().load_proc("/loop.bin");

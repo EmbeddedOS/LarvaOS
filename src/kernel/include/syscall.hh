@@ -27,7 +27,7 @@ namespace lava
         uint32_t _ret_reg[MAXIMUM_NUMBER_OF_SYSCALL_ARGS];
     };
 
-    typedef void *(*syscall_handler)(sys_args);
+    typedef void *(*syscall_handler)(const sys_args&);
 
     class syscalls : public arch_interface
     {
@@ -42,7 +42,7 @@ namespace lava
         void operator=(syscalls &&) = delete;
 
         void add(int num, syscall_handler h);
-        void *call(int num, sys_args args);
+        void *call(int num,const sys_args& args);
 
     private:
         syscalls() = default;

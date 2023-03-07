@@ -18,7 +18,8 @@ OBJS+= ./core/kernel.o \
 	   ./core/default_symbols.o \
 	   ./core/interrupt.o \
 	   ./core/process.o \
-	   ./core/syscall.o
+	   ./core/syscall.o \
+	   ./core/api.o
 
 #FLAGS+= -fno-exceptions
 
