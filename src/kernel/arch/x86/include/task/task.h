@@ -52,3 +52,5 @@ extern void load_kernel_data_segment_registers();
 int load_user_task_page();
 
 void task_save_state(struct task *task, struct interrupt_frame *frame);
+
+int copy_from_user(struct task *task, void *user_ptr, void *to, int size);

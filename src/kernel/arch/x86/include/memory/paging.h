@@ -33,4 +33,13 @@ int paging_map_virtual_memory(struct paging_4GB_chunk *page,
                               void *phys_end,
                               int flags);
 
+int paging_map_page(struct paging_4GB_chunk *page,
+                    void *virt,
+                    void *phys,
+                    int flags);
+
 void *paging_align_address(void *ptr);
+
+uint32_t paging_get_entry_of_address(struct paging_4GB_chunk *page, void *virt);
+
+int paging_set_entry_for_virtual_address(struct paging_4GB_chunk *page, void *virtual_address, uint32_t val);

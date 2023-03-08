@@ -16,11 +16,10 @@ void switch_to_kernel_page()
 void paging_install_kernel_page(struct paging_4GB_chunk *kernel_page)
 {
     if (kernel_directory == NULL)
-    {// We only load kernel page one time.
+    { // We only load kernel page one time.
         kernel_directory = kernel_page;
     }
 }
-
 
 static bool paging_check_address_is_aligned(void *addr)
 {
@@ -82,7 +81,7 @@ out:
     return result;
 }
 
-static int paging_set_virtual_address(struct paging_4GB_chunk *page, void *virtual_address, uint32_t val)
+int paging_set_entry_for_virtual_address(struct paging_4GB_chunk *page, void *virtual_address, uint32_t val)
 {
     int result = 0;
     if (!paging_check_address_is_aligned(virtual_address))
@@ -118,17 +117,18 @@ void release_4GB_virtual_memory_address_space(struct paging_4GB_chunk *page)
     kfree(page->directory_entry);
     kfree(page);
 }
-static int paging_map_page(struct paging_4GB_chunk *page,
-                           void *virt,
-                           void *phys,
-                           int flags)
+
+int paging_map_page(struct paging_4GB_chunk *page,
+                    void *virt,
+                    void *phys,
+                    int flags)
 {
     if ((uint32_t)virt % PAGING_PAGE_SIZE || (uint32_t)phys % PAGING_PAGE_SIZE)
     {
         return -EINVAL;
     }
 
-    return paging_set_virtual_address(page, virt, (uint32_t)phys | flags);
+    return paging_set_entry_for_virtual_address(page, virt, (uint32_t)phys | flags);
 }
 
 static int paging_map_memory_by_range(struct paging_4GB_chunk *page,
@@ -206,3 +206,14 @@ void *paging_align_address(void *ptr)
     return ptr;
 }
 
+uint32_t paging_get_entry_of_address(struct paging_4GB_chunk *page, void *virt)
+{
+    uint32_t dir_index = 0;
+    uint32_t table_index = 0;
+    paging_get_indexes(virt, &dir_index, &table_index);
+    
+    uint32_t entry = page->directory_entry[dir_index];
+    uint32_t* table = (uint32_t*)(entry  & 0xFFFFF000);
+
+    return table[table_index];
+}

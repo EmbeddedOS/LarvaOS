@@ -180,3 +180,63 @@ void task_save_state(struct task *task, struct interrupt_frame *frame)
     task->registers.edx = frame->edx;
     task->registers.esi = frame->esi;
 }
+
+int copy_from_user(struct task *task, void *user_ptr, void *to, int size)
+{
+    int res = 0;
+
+    if (size >= PAGING_PAGE_SIZE)
+    {
+        res = -EINVAL;
+        goto out;
+    }
+
+    // Make a pointer in kernel page.
+    char *tmp = kzalloc(size);
+
+    if (tmp == NULL)
+    {
+        res = -ENOMEM;
+        goto out;
+    }
+
+    struct paging_4GB_chunk* page_structure = task->page_directory;
+
+    // Get the paging entry from the task for that particular page.
+    uint32_t old_entry = paging_get_entry_of_address(page_structure, tmp);
+
+    // Map the virtual address of temp in the task page to physical memory point to the same address.
+    // So when the task page is loaded, It will make temp become valid memory.
+    paging_map_page(page_structure,
+                    tmp,
+                    tmp,
+                    PAGING_IS_WRITEABLE | PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
+
+    // Switch to task page and we can see the memory.
+    switch_to_page(page_structure);
+
+    // Copy data to temp at virtual memory.
+    strncpy(tmp, user_ptr, size);
+
+    // Switch back to kernel page.
+    switch_to_kernel_page();
+
+    // We need to restore the old task page back to the old entry for that address,
+    // because maybe it was pointing somewhere important. So we have to send it back
+    // to the old entry to avoid user processes pointing to this point forever.
+    res = paging_set_entry_for_virtual_address(page_structure, tmp, old_entry);
+    if (res < 0)
+    {
+        res = -EIO;
+        goto free;
+    }
+
+    // Copy data to output pointer.
+    strncpy(to, tmp, size);
+
+free:
+    kfree(tmp);
+
+out:
+    return res;
+}
